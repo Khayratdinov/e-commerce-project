@@ -14,10 +14,13 @@ class BaseModel(models.Model):
         abstract = True
 
 
+# ================================ HOMESLIDER ================================ #
+
+class HomeSlider(BaseModel):
 
     STATUS = (
-        ('True', 'Available'),
-        ('False', 'Not Available'),
+        ('True', 'Published'),
+        ('False', 'Not Published'),
     )
 
     title = models.CharField(max_length=255)
@@ -26,7 +29,7 @@ class BaseModel(models.Model):
     cover = models.ImageField(blank=True, upload_to='images/')
     status = models.CharField(max_length=15, choices=STATUS, default='True')
     url = models.CharField(max_length=555, blank=True)
-    create_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.title
