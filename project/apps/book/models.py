@@ -1,4 +1,5 @@
 from django.db import models
+
 # ============================================================================ #
 from project.apps.common.models import BaseModel
 
@@ -7,9 +8,9 @@ from project.apps.common.models import BaseModel
 
 # =============================== CATEGORY BOOK ============================== #
 
+
 class Category(BaseModel):
     title = models.CharField(max_length=200)
-
 
     def __str__(self):
         return self.title
@@ -17,9 +18,9 @@ class Category(BaseModel):
 
 # ==================================== TAG =================================== #
 
+
 class Tag(BaseModel):
     title = models.CharField(max_length=200)
-
 
     def __str__(self):
         return self.title
@@ -27,28 +28,30 @@ class Tag(BaseModel):
 
 # =================================== BOOK =================================== #
 
+
 class Book(BaseModel):
 
     STATUS = (
-        ('True', 'Published'),
-        ('False', 'Not Published'),
+        ("True", "Published"),
+        ("False", "Not Published"),
     )
 
     SALES_STATUS = (
-        ('CHEGIRMA', 'CHEGIRMA'),
-        ('YANGI', 'YANGI'),
-        ('FALSE', 'FALSE'),
+        ("CHEGIRMA", "CHEGIRMA"),
+        ("YANGI", "YANGI"),
+        ("FALSE", "FALSE"),
     )
     title = models.CharField(max_length=200, unique=True)
     detail = models.TextField()
     coverpage = models.ImageField(upload_to="images/")
     price = models.DecimalField(max_digits=8, decimal_places=2)
     author = models.CharField(max_length=100, blank=True, null=True)
-    category = models.ManyToManyField(Category, blank=True, related_name='book')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='book')
-    status = models.CharField(max_length=10,choices=STATUS, default='True')
-    sales_status = models.CharField(max_length=15,choices=SALES_STATUS, default="False")
-
+    category = models.ManyToManyField(Category, blank=True, related_name="book")
+    tags = models.ManyToManyField(Tag, blank=True, related_name="book")
+    status = models.CharField(max_length=10, choices=STATUS, default="True")
+    sales_status = models.CharField(
+        max_length=15, choices=SALES_STATUS, default="False"
+    )
 
     def __str__(self):
         return self.title
@@ -56,11 +59,10 @@ class Book(BaseModel):
 
 # ================================ BOOK SLIDER =============================== #
 
+
 class BookSlider(BaseModel):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="images/")
 
     def __str__(self):
         return self.title
-
-    
