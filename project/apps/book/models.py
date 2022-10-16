@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # ============================================================================ #
 from project.apps.common.models import BaseModel
@@ -55,6 +56,9 @@ class Book(BaseModel):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("book_detail", kwargs={"pk": self.pk})
 
 
 # ================================ BOOK SLIDER =============================== #
