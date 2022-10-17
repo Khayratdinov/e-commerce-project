@@ -12,6 +12,7 @@ from project.apps.common.models import BaseModel
 
 class Category(BaseModel):
     title = models.CharField(max_length=200)
+    slug = models.SlugField(null=False, unique=True)
 
     def __str__(self):
         return self.title
@@ -22,6 +23,7 @@ class Category(BaseModel):
 
 class Tag(BaseModel):
     title = models.CharField(max_length=200)
+    slug = models.SlugField(null=False, unique=True)
 
     def __str__(self):
         return self.title
@@ -53,6 +55,7 @@ class Book(BaseModel):
     sales_status = models.CharField(
         max_length=15, choices=SALES_STATUS, default="False"
     )
+    slug = models.SlugField(null=False, unique=True)
 
     def __str__(self):
         return self.title

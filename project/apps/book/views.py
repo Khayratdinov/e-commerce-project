@@ -16,8 +16,8 @@ def book_list(request):
     return render(request, "book/book_list.html", context)
 
 
-def book_detail(request, pk):
-    book = Book.objects.filter(pk=pk)
+def book_detail(request, slug):
+    book = Book.objects.filter(slug=slug)
     book_slider = BookSlider.objects.filter(book=book)
 
     context = {"book": book, "book_slider": book_slider}
@@ -25,16 +25,16 @@ def book_detail(request, pk):
     return render(request, "book/book_detail.html", context)
 
 
-def book_list_by_category(request, pk):
-    category = Category.objects.filter(pk=pk)
+def book_list_by_category(request, slug):
+    category = Category.objects.filter(slug=slug)
     books = Book.objects.filter(category=category)
 
     context = {"category": category, "books": books}
     return render(request, "book/book_detail.html", context)
 
 
-def book_list_by_tag(request, pk):
-    tag = Tag.objects.filter(pk=pk)
+def book_list_by_tag(request, slug):
+    tag = Tag.objects.filter(slug=slug)
     books = Book.objects.filter(tags=tag)
 
     context = {"tag": tag, "books": books}
