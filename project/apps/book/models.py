@@ -1,11 +1,20 @@
+import math
+
+# ============================================================================ #
+
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.db.models import Avg, Count
 
 # ============================================================================ #
 from project.apps.common.models import BaseModel
 
 
 # Create your models here.
+
+User = get_user_model()
+
 
 # =============================== CATEGORY BOOK ============================== #
 
@@ -56,12 +65,31 @@ class Book(BaseModel):
         max_length=15, choices=SALES_STATUS, default="False"
     )
     slug = models.SlugField(null=False, unique=True)
+    rating = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("book_detail", kwargs={"pk": self.pk})
+
+    def avaregereview(self):
+        reviews = BookComment.objects.filter(book=self, status="True").aggregate(
+            avarage=Avg("rate")
+        )
+        avg = 0
+        if reviews["avarage"] is not None:
+            avg = math.ceil((reviews["avarage"]))
+        return avg
+
+    def countreview(self):
+        reviews = BookComment.objects.filter(book=self, status="True").aggregate(
+            count=Count("id")
+        )
+        cnt = 0
+        if reviews["count"] is not None:
+            cnt = int(reviews["count"])
+        return cnt
 
 
 # ================================ BOOK SLIDER =============================== #
@@ -73,3 +101,24 @@ class BookSlider(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+# =============================== BOOK COMMENT =============================== #
+
+
+class BookComment(BaseModel):
+
+    STATUS = (
+        ("True", "Published"),
+        ("False", "Not Published"),
+    )
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=255, blank=True)
+    rate = models.IntegerField(default=1)
+    ip = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS, default="True")
+
+    def __str__(self):
+        return self.book.title
