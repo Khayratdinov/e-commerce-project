@@ -71,7 +71,7 @@ class Book(BaseModel):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("book_detail", kwargs={"pk": self.pk})
+        return reverse("book_detail", kwargs={"slug": self.slug})
 
     def avaregereview(self):
         reviews = BookComment.objects.filter(book=self, status="True").aggregate(
@@ -98,9 +98,6 @@ class Book(BaseModel):
 class BookSlider(BaseModel):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="images/")
-
-    def __str__(self):
-        return self.title
 
 
 # =============================== BOOK COMMENT =============================== #

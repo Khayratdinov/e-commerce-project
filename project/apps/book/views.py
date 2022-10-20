@@ -25,7 +25,7 @@ def book_list(request):
 
 
 def book_detail(request, slug):
-    book = Book.objects.filter(slug=slug)
+    book = Book.objects.get(slug=slug)
     book_slider = BookSlider.objects.filter(book=book)
 
     context = {"book": book, "book_slider": book_slider}
