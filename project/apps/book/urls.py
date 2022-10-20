@@ -9,7 +9,7 @@ urlpatterns = [
     path(
         "category_detail/<str:slug>/",
         views.book_list_by_category,
-        name="book_list_by_category",
+        name="category_detail",
     ),
     path("tag_detail/<str:slug>/", views.book_list_by_tag, name="book_list_by_tag"),
     path("add_comment/<int:book_id>", views.add_comment, name="add_comment"),
