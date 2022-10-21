@@ -33,3 +33,12 @@ class OrderLineItem(models.Model):
         return "{0} {1} @ {2}".format(
             self.quantity, self.product.name, self.product.price
         )
+
+
+class Shipping(models.Model):
+    title = models.CharField(max_length=100)
+    price = models.PositiveIntegerField()
+    wight = models.DecimalField(max_digits=10, decimal_places=3)
+
+    def __str__(self):
+        return self.title
