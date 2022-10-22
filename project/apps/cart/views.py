@@ -24,7 +24,7 @@ def cart_detail(request):
     context = {
         "cart": cart,
     }
-    return render(request, "order/cart_detail.html", context)
+    return render(request, "cart/cart_detail.html", context)
 
 
 # ================================= ADD CART ================================= #
