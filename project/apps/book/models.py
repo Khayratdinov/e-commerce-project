@@ -8,6 +8,11 @@ from django.contrib.auth import get_user_model
 from django.db.models import Avg, Count
 
 # ============================================================================ #
+from ckeditor_uploader.fields import RichTextUploadingField
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
+# ============================================================================ #
 from project.apps.common.models import BaseModel
 
 
@@ -54,8 +59,13 @@ class Book(BaseModel):
         ("FALSE", "FALSE"),
     )
     title = models.CharField(max_length=200, unique=True)
-    detail = models.TextField()
-    coverpage = models.ImageField(upload_to="images/")
+    detail = RichTextUploadingField()
+    coverpage = ProcessedImageField(
+        upload_to="books/",
+        processors=[ResizeToFill(450, 565)],
+        format="JPEG",
+        options={"quality": 100},
+    )
     price = models.DecimalField(max_digits=8, decimal_places=2)
     author = models.CharField(max_length=100, blank=True, null=True)
     category = models.ManyToManyField(Category, blank=True, related_name="book")
@@ -97,7 +107,14 @@ class Book(BaseModel):
 
 class BookSlider(BaseModel):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="images/")
+    image = ProcessedImageField(
+        upload_to="books/",
+        processors=[ResizeToFill(450, 565)],
+        format="JPEG",
+        options={"quality": 100},
+        blank=True,
+        null=True,
+    )
 
 
 # =============================== BOOK COMMENT =============================== #

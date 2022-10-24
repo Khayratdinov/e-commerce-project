@@ -3,6 +3,11 @@ from django.db.models import Count
 from django.urls import reverse
 
 # ============================================================================ #
+from ckeditor_uploader.fields import RichTextUploadingField
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
+# ============================================================================ #
 from project.apps.common.models import BaseModel
 
 # ============================================================================ #
@@ -18,10 +23,15 @@ class Blog(BaseModel):
     )
 
     title = models.CharField(max_length=355)
-    image = models.ImageField(upload_to="images/")
+    image = ProcessedImageField(
+        upload_to="blog/",
+        processors=[ResizeToFill(1170, 788)],
+        format="JPEG",
+        options={"quality": 100},
+    )
 
     description = models.TextField(blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
+    text = RichTextUploadingField()
     status = models.CharField(max_length=15, choices=STATUS, default="True")
     category = models.ForeignKey("Category_Blog", on_delete=models.CASCADE)
     views = models.PositiveBigIntegerField(default=0)

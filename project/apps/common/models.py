@@ -2,6 +2,10 @@ from unittest.mock import Base
 from django.db import models
 
 # ============================================================================ #
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
+# ============================================================================ #
 
 
 # ================================ BASE MODEL ================================ #
@@ -73,5 +77,12 @@ class HeadImages(BaseModel):
         ("False", "Not Available"),
     )
 
-    shape = models.ImageField(upload_to="images/")
+    image = ProcessedImageField(
+        upload_to="images/",
+        processors=[ResizeToFill(1920, 1285)],
+        format="JPEG",
+        options={"quality": 100},
+        null=True,
+        blank=True,
+    )
     status = models.CharField(max_length=15, choices=STATUS, default="True")
