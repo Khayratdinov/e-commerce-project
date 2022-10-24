@@ -27,6 +27,7 @@ ALLOWED_HOSTS = ["*"]
 
 
 DJANGO_APPS = [
+    "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -35,7 +36,11 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "ckeditor",
+    "ckeditor_uploader",
+    "imagekit",
+]
 
 LOCAL_APPS = [
     "project.apps.core",
@@ -129,6 +134,20 @@ STATICFILES_FINDERS = [
 
 MEDIA_ROOT = str(PROJECT_DIR / "media")
 MEDIA_URL = "/media/"
+
+
+CKEDITOR_JQUERY_URL = "https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"
+
+CKEDITOR_UPLOAD_PATH = "images/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "full",
+        "height": 200,
+        "width": 750,
+    },
+}
 
 
 # Default primary key field type
