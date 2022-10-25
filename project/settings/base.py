@@ -3,6 +3,8 @@ from pathlib import Path
 import environ
 import os
 
+from django.utils.translation import gettext_lazy as _
+
 env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -109,13 +111,26 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "uz"
 
-TIME_ZONE = "UTC"
+LANGUAGES = [
+    ("en", _("English")),
+    ("ru", _("Russian")),
+    ("uz", _("Uzbek")),
+]
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = "uz"
+MODELTRANSLATION_PREPOPULATE_LANGUAGE = "uz"
+
+TIME_ZONE = "Asia/Tashkent"
 
 USE_I18N = True
 
 USE_TZ = True
+
+LOCALE_PATHS = [
+    os.path.join(ROOT_DIR, "locale"),
+]
 
 
 # =============================== STATIC FILES =============================== #

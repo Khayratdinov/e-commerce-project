@@ -2,9 +2,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 
 
-urlpatterns = [
+urlpatterns = [] + i18n_patterns(
+    path("i18n/", include("django.conf.urls.i18n")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
     path("admin/", admin.site.urls),
     path("", include("project.apps.common.urls")),
@@ -13,7 +15,7 @@ urlpatterns = [
     path("cart/", include("project.apps.cart.urls")),
     path("order/", include("project.apps.order.urls")),
     path("blog/", include("project.apps.blog.urls")),
-]
+)
 
 
 if settings.DEBUG:
