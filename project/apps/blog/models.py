@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Count
 from django.urls import reverse
 
 # ============================================================================ #
@@ -33,7 +32,7 @@ class Blog(BaseModel):
     description = models.TextField(blank=True, null=True)
     text = RichTextUploadingField()
     status = models.CharField(max_length=15, choices=STATUS, default="True")
-    category = models.ForeignKey("Category_Blog", on_delete=models.CASCADE)
+    category = models.ForeignKey("CategoryBlog", on_delete=models.CASCADE)
     views = models.PositiveBigIntegerField(default=0)
     slug = models.SlugField(null=False, unique=True)
 
@@ -47,7 +46,7 @@ class Blog(BaseModel):
 # ============================================================================ #
 
 
-class Category_Blog(BaseModel):
+class CategoryBlog(BaseModel):
     title = models.CharField(max_length=50)
     slug = models.SlugField(null=False, unique=True)
 
@@ -61,7 +60,7 @@ class Category_Blog(BaseModel):
 # ============================================================================ #
 
 
-class Comment_blog(BaseModel):
+class BlogComment(BaseModel):
 
     STATUS = (
         ("True", "No Block"),
