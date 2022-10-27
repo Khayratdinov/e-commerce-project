@@ -72,6 +72,6 @@ def add_comment(request, book_id):
             else:
                 book.rating = math.ceil((reviews["avarage"]))
             book.save()
-            messages.success(request, _("Izohingiz qabul qilindi !"))
+            messages.success(request, "Izohingiz qabul qilindi !")
             return HttpResponseRedirect(url)
     return HttpResponseRedirect(url)

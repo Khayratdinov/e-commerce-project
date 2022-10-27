@@ -13,7 +13,6 @@ db.sqlite3-journal
 media
 templates
 static
-locale
 staticfiles
 mediafiles
 
