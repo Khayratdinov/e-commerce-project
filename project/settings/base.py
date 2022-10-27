@@ -45,6 +45,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "project.apps.administration",
     "project.apps.core",
     "project.apps.common",
     "project.apps.book",
