@@ -15,6 +15,7 @@ urlpatterns = [] + i18n_patterns(
     path("cart/", include("project.apps.cart.urls")),
     path("order/", include("project.apps.order.urls")),
     path("blog/", include("project.apps.blog.urls")),
+    path("administration/", include("project.apps.administration.urls")),
 )
 
 
