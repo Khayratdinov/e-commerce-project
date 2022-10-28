@@ -8,7 +8,12 @@ from django.forms import (
 )
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider
+from project.apps.book.models import Category, Book, BookSlider, Tag
+
+
+# ============================================================================ #
+#                                   BOOK APP                                   #
+# ============================================================================ #
 
 # ============================ CATEGORY BOOK FORM ============================ #
 
@@ -93,7 +98,7 @@ class BookForm(ModelForm):
         }
 
 
-# ================================ BOOK SLIDER =============================== #
+# ============================= BOOK SLIDER FORM ============================= #
 
 
 class BookSliderForm(ModelForm):
@@ -107,3 +112,27 @@ class BookSliderForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter image"}
             ),
         }
+
+
+# ============================ TAGS FORM FOR BOOK ============================ #
+
+
+class TagForm(ModelForm):
+    class Meta:
+        model = Tag
+        fields = ["title_uz", "title_ru", "title_en"]
+
+        widgets = {
+            "title_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+        }
+
+
+# ============================================================================ #

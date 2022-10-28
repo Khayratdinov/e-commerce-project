@@ -5,7 +5,12 @@ from django.contrib import messages
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag
-from project.apps.administration.forms import CategoryForm, BookSliderForm, BookForm
+from project.apps.administration.forms import (
+    CategoryForm,
+    BookSliderForm,
+    BookForm,
+    TagForm,
+)
 
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
 
@@ -225,3 +230,68 @@ def book_delete(request, pk):
     book.delete()
     messages.success(request, "Malumotlaringiz o'chirildi")
     return redirect("book_admin")
+
+
+# ============================================================================ #
+#                                   TAG BOOK                                   #
+# ============================================================================ #
+
+
+def tag_book_admin(request):
+    tags = Tag.objects.all()
+    paginator = Paginator(tags, 10)
+    page = request.GET.get("page")
+    try:
+        tags = paginator.page(page)
+    except PageNotAnInteger:
+        tags = paginator.page(1)
+    except EmptyPage:
+        tags = paginator.page(paginator.num_pages)
+    context = {"tags": tags}
+    return render(request, "administration/tag_book/tag_book_admin.html", context)
+
+
+# ============================================================================ #
+
+
+def tag_book_create(request):
+    if request.method == "POST":
+        form = TagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tag qoshildi")
+            return redirect("tag_admin")
+    else:
+        form = TagForm()
+    context = {"form": form}
+    return render(request, "administration/tag_book/tag_book_create.html", context)
+
+
+# ============================================================================ #
+
+
+def tag_book_edit(request, pk):
+    tag = Tag.objects.get(pk=pk)
+    if request.method == "POST":
+        form = TagForm(request.POST, request.FILES, instance=tag)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tag yangilandi")
+            return redirect("tag_admin")
+    else:
+        form = TagForm(instance=tag)
+    context = {"form": form, "tag": tag}
+    return render(request, "administration/tag_book/tag_book_edit.html", context)
+
+
+# ============================================================================ #
+
+
+def tag_book_delete(request, pk):
+    tag = Tag.objects.get(pk=pk)
+    tag.delete()
+    messages.success(request, "Tag o'chirildi")
+    return redirect("tag_admin")
+
+
+# ============================================================================ #
