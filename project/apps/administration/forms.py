@@ -17,11 +17,17 @@ class CategoryForm(ModelForm):
     class Meta:
 
         model = Category
-        fields = ["title"]
+        fields = ["title_uz", "title_ru", "title_en"]
 
         widgets = {
-            "title": TextInput(
-                attrs={"class": "form-control", "placeholder": "Category"}
+            "title_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Category Uzb tilida"}
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Category Rus tilida"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Category Eng tilida"}
             ),
         }
 
@@ -33,22 +39,38 @@ class BookForm(ModelForm):
     class Meta:
         model = Book
         fields = [
-            "title",
-            "detail",
+            "title_uz",
+            "title_ru",
+            "title_en",
+            "detail_uz",
+            "detail_ru",
+            "detail_en",
             "coverpage",
             "price",
-            "author",
             "category",
-            "tags",
+            "author",
             "status",
             "sales_status",
+            "tags",
         ]
 
         widgets = {
-            "title": TextInput(
+            "title_uz": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
             ),
-            "detail": TextInput(
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "detail_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_en": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter detail"}
             ),
             "coverpage": FileInput(
@@ -59,9 +81,6 @@ class BookForm(ModelForm):
             ),
             "author": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter author"}
-            ),
-            "publisher": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter publisher"}
             ),
             "category": SelectMultiple(
                 attrs={"class": "form-control", "placeholder": "Enter category"}
