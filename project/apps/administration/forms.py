@@ -9,6 +9,7 @@ from django.forms import (
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
+from project.apps.common.models import HomeSlider
 
 
 # ============================================================================ #
@@ -147,4 +148,54 @@ class BookCommentForm(ModelForm):
         fields = ["status"]
         widgets = {
             "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ================================ HOME SLIDER =============================== #
+
+
+class HomeSliderForm(ModelForm):
+    class Meta:
+        model = HomeSlider
+        fields = [
+            "title_uz",
+            "title_ru",
+            "title_en",
+            "description_uz",
+            "description_ru",
+            "description_en",
+            "status",
+            "url",
+            "shape",
+            "cover",
+        ]
+        widgets = {
+            "title_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "description_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "url": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter url"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+            "shape": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter shape"}
+            ),
+            "cover": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter cover"}
+            ),
         }

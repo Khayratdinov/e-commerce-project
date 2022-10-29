@@ -11,12 +11,14 @@ from django.contrib import messages
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
+from project.apps.common.models import HomeSlider
 from project.apps.administration.forms import (
     CategoryForm,
     BookSliderForm,
     BookForm,
     TagForm,
     BookCommentForm,
+    HomeSliderForm,
 )
 
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
@@ -407,3 +409,74 @@ def book_comment_delete(request, pk):
     book.save()
     messages.success(request, "Savollar o'chirildi")
     return redirect("book_comment_admin")
+
+
+# ============================================================================ #
+#                                  HOME SLIDER                                 #
+# ============================================================================ #
+
+
+@seller_required
+def home_slider_admin(request):
+    home_sliders = HomeSlider.objects.all()
+    paginator = Paginator(home_sliders, 10)
+    page = request.GET.get("page")
+    try:
+        home_sliders = paginator.page(page)
+    except PageNotAnInteger:
+        home_sliders = paginator.page(1)
+    except EmptyPage:
+        home_sliders = paginator.page(paginator.num_pages)
+    context = {"home_sliders": home_sliders}
+    return render(request, "administration/home_slider/home_slider_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@admin_required
+def home_slider_create(request):
+
+    form = HomeSliderForm(request.POST or None, request.FILES or None)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Malumotlaringiz saqlandi")
+        return redirect("home_slider_admin")
+
+    context = {"form": form}
+
+    return render(
+        request, "administration/home_slider/home_slider_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@admin_required
+def home_slider_edit(request, pk):
+    home_slider = get_object_or_404(HomeSlider, pk=pk)
+    form = HomeSliderForm(
+        request.POST or None, request.FILES or None, instance=home_slider
+    )
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Malumotlaringiz yangilandi")
+        return redirect("home_slider_admin")
+
+    context = {"form": form}
+
+    return render(request, "administration/home_slider/home_slider_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@admin_required
+def home_slider_delete(request, pk):
+    home_slider = get_object_or_404(HomeSlider, pk=pk)
+    home_slider.delete()
+    messages.success(request, "Malumotlaringiz o'chirildi")
+    return redirect("home_slider_admin")

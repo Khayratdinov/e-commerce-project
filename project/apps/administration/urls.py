@@ -36,4 +36,13 @@ urlpatterns = [
         views.book_comment_delete,
         name="book_comment_delete",
     ),
+    # ================================ HOME SLIDER =============================== #
+    path("home_slider_admin/", views.home_slider_admin, name="home_slider_admin"),
+    path("home_slider_create/", views.home_slider_create, name="home_slider_create"),
+    path("home_slider_edit/<int:pk>/", views.home_slider_edit, name="home_slider_edit"),
+    path(
+        "home_slider_delete/<int:pk>/",
+        views.home_slider_delete,
+        name="home_slider_delete",
+    ),
 ]
