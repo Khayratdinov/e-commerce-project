@@ -1,6 +1,7 @@
 from django.urls import path
 
 # ============================================================================ #
+
 from project.apps.administration import views
 
 urlpatterns = [
@@ -20,4 +21,19 @@ urlpatterns = [
     path("tag_create/", views.tag_book_create, name="tag_create"),
     path("tag_edit/<int:pk>/", views.tag_book_edit, name="tag_edit"),
     path("tag_delete/<int:pk>/", views.tag_book_delete, name="tag_delete"),
+    # =============================== BOOK COMMENT =============================== #
+    path("book_comment_admin/", views.book_comment_admin, name="book_comment_admin"),
+    path(
+        "book_comment_detail/<int:pk>/",
+        views.book_comment_detail,
+        name="book_comment_detail",
+    ),
+    path(
+        "book_comment_edit/<int:pk>/", views.book_comment_edit, name="book_comment_edit"
+    ),
+    path(
+        "book_comment_delete/<int:pk>/",
+        views.book_comment_delete,
+        name="book_comment_delete",
+    ),
 ]

@@ -1,15 +1,21 @@
+import math
+
+# ============================================================================ #
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import inlineformset_factory
+from django.db.models import Avg
 from django.contrib import messages
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider, Tag
+from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.administration.forms import (
     CategoryForm,
     BookSliderForm,
     BookForm,
     TagForm,
+    BookCommentForm,
 )
 
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
@@ -295,3 +301,68 @@ def tag_book_delete(request, pk):
 
 
 # ============================================================================ #
+
+
+# ============================================================================ #
+#                                 BOOK COMMENT                                 #
+# ============================================================================ #
+
+
+def book_comment_admin(request):
+    book_comments = BookComment.objects.all()
+
+    context = {"book_comments": book_comments}
+    return render(
+        request, "administration/book_comment/book_comment_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+def book_comment_detail(request, pk):
+    book_comment = BookComment.objects.get(pk=pk)
+    context = {"book_comment": book_comment}
+    return render(
+        request, "administration/book_comment/book_comment_detail.html", context
+    )
+
+
+# ============================================================================ #
+
+
+def book_comment_edit(request, pk):
+    book_comment = BookComment.objects.get(pk=pk)
+    if request.method == "POST":
+        form = BookCommentForm(request.POST, instance=book_comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Savollar yangilandi")
+            return redirect("book_comment_admin")
+    else:
+        form = BookCommentForm(instance=book_comment)
+    context = {"form": form, "book_comment": book_comment}
+    return render(
+        request, "administration/book_comment/book_comment_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+def book_comment_delete(request, pk):
+    book_comment = BookComment.objects.get(pk=pk)
+    book = Book.objects.get(pk=book_comment.book.id)
+    book_comment.delete()
+    reviews = BookComment.objects.filter(book=book, status="True").aggregate(
+        avarage=Avg("rate")
+    )
+    if reviews["avarage"] is None:
+        book.rating = 0
+        book.save()
+    else:
+
+        book.rating = math.ceil((reviews["avarage"]))
+    book.save()
+    messages.success(request, "Savollar o'chirildi")
+    return redirect("book_comment_admin")

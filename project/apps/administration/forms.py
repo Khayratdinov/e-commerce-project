@@ -8,7 +8,7 @@ from django.forms import (
 )
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider, Tag
+from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 
 
 # ============================================================================ #
@@ -136,3 +136,15 @@ class TagForm(ModelForm):
 
 
 # ============================================================================ #
+
+
+# =============================== BOOK COMMENT =============================== #
+
+
+class BookCommentForm(ModelForm):
+    class Meta:
+        model = BookComment
+        fields = ["status"]
+        widgets = {
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
