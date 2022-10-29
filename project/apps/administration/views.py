@@ -5,6 +5,7 @@ import math
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import inlineformset_factory
+from django.contrib.admin.views.decorators import user_passes_test
 from django.db.models import Avg
 from django.contrib import messages
 
@@ -21,6 +22,30 @@ from project.apps.administration.forms import (
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
 
 
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
+#                                   DECORATOR                                  #
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
+
+# :::::::::::::::::::::::::::::: ADMIN REQUIRED :::::::::::::::::::::::::::::: #
+
+
+def admin_required(view_func):
+    decorated_view_func = user_passes_test(lambda u: u.is_superuser, login_url="login")(
+        view_func
+    )
+    return decorated_view_func
+
+
+# :::::::::::::::::::::::::::::: SELLER REQUIRED ::::::::::::::::::::::::::::: #
+
+
+def seller_required(view_func):
+    decorated_view_func = user_passes_test(
+        lambda u: u.is_staff or u.is_superuser, login_url="login"
+    )(view_func)
+    return decorated_view_func
+
+
 def index(request):
 
     return render(request, "administration/dashboard.html")
@@ -31,6 +56,7 @@ def index(request):
 # ============================================================================ #
 
 
+@seller_required
 def category_admin(request):
     categories = Category.objects.all()
     paginator = Paginator(categories, 10)
@@ -48,6 +74,7 @@ def category_admin(request):
 # ============================================================================ #
 
 
+@admin_required
 def category_create(request):
 
     form = CategoryForm(request.POST or None, request.FILES or None)
@@ -65,6 +92,7 @@ def category_create(request):
 # ============================================================================ #
 
 
+@admin_required
 def category_edit(request, pk):
 
     category = get_object_or_404(Category, pk=pk)
@@ -83,6 +111,7 @@ def category_edit(request, pk):
 # ============================================================================ #
 
 
+@admin_required
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     category.delete()
@@ -95,6 +124,7 @@ def category_delete(request, pk):
 # ============================================================================ #
 
 
+@seller_required
 def book_admin(request):
 
     if request.method == "POST":
@@ -126,6 +156,7 @@ def book_admin(request):
 # ============================================================================ #
 
 
+@admin_required
 def book_create(request):
     book = Book()
 
@@ -175,6 +206,7 @@ def book_create(request):
 # ============================================================================ #
 
 
+@admin_required
 def book_edit(request, pk):
     book = get_object_or_404(Book, pk=pk)
 
@@ -231,6 +263,7 @@ def book_edit(request, pk):
 # ============================================================================ #
 
 
+@admin_required
 def book_delete(request, pk):
     book = Book.objects.get(id=pk)
     book.delete()
@@ -243,6 +276,7 @@ def book_delete(request, pk):
 # ============================================================================ #
 
 
+@seller_required
 def tag_book_admin(request):
     tags = Tag.objects.all()
     paginator = Paginator(tags, 10)
@@ -260,6 +294,7 @@ def tag_book_admin(request):
 # ============================================================================ #
 
 
+@admin_required
 def tag_book_create(request):
     if request.method == "POST":
         form = TagForm(request.POST)
@@ -276,6 +311,7 @@ def tag_book_create(request):
 # ============================================================================ #
 
 
+@admin_required
 def tag_book_edit(request, pk):
     tag = Tag.objects.get(pk=pk)
     if request.method == "POST":
@@ -293,6 +329,7 @@ def tag_book_edit(request, pk):
 # ============================================================================ #
 
 
+@admin_required
 def tag_book_delete(request, pk):
     tag = Tag.objects.get(pk=pk)
     tag.delete()
@@ -308,6 +345,7 @@ def tag_book_delete(request, pk):
 # ============================================================================ #
 
 
+@seller_required
 def book_comment_admin(request):
     book_comments = BookComment.objects.all()
 
@@ -320,6 +358,7 @@ def book_comment_admin(request):
 # ============================================================================ #
 
 
+@seller_required
 def book_comment_detail(request, pk):
     book_comment = BookComment.objects.get(pk=pk)
     context = {"book_comment": book_comment}
@@ -331,6 +370,7 @@ def book_comment_detail(request, pk):
 # ============================================================================ #
 
 
+@seller_required
 def book_comment_edit(request, pk):
     book_comment = BookComment.objects.get(pk=pk)
     if request.method == "POST":
@@ -350,6 +390,7 @@ def book_comment_edit(request, pk):
 # ============================================================================ #
 
 
+@admin_required
 def book_comment_delete(request, pk):
     book_comment = BookComment.objects.get(pk=pk)
     book = Book.objects.get(pk=book_comment.book.id)
