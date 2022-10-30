@@ -12,7 +12,7 @@ from django.contrib import messages
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
-from project.apps.order.models import Order
+from project.apps.order.models import Order, Shipping
 from project.apps.administration.forms import (
     CategoryForm,
     BookSliderForm,
@@ -20,6 +20,7 @@ from project.apps.administration.forms import (
     TagForm,
     BookCommentForm,
     HomeSliderForm,
+    ShippingForm,
 )
 
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
@@ -554,3 +555,62 @@ def order_detail(request, id):
         print(order.shipping)
         context = {"order": order}
         return render(request, "administration/order/order_detail.html", context)
+
+
+# ============================================================================ #
+#                                   SHIPPING                                   #
+# ============================================================================ #
+
+
+@seller_required
+def shipping_admin(request):
+    shippings = Shipping.objects.all()
+
+    context = {"shippings": shippings}
+    return render(request, "administration/shipping/shipping_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_create(request):
+    if request.method == "POST":
+        form = ShippingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Malumotlar qoshildi")
+            return redirect("shipping_admin")
+    else:
+        form = ShippingForm()
+    context = {"form": form}
+    return render(request, "administration/shipping/shipping_create.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_edit(request, pk):
+    shipping = Shipping.objects.get(pk=pk)
+    if request.method == "POST":
+        form = ShippingForm(request.POST, instance=shipping)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Malumotlar yangilandi")
+            return redirect("shipping_admin")
+    else:
+        form = ShippingForm(instance=shipping)
+    context = {"form": form, "shipping": shipping}
+    return render(request, "administration/shipping/shipping_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_delete(request, pk):
+    shipping = Shipping.objects.get(pk=pk)
+    shipping.delete()
+    messages.success(request, "Malumotlar o'chirildi")
+    return redirect("shipping_admin")

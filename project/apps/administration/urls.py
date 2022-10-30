@@ -48,4 +48,9 @@ urlpatterns = [
     # =================================== ORDER ================================== #
     path("order_list/", views.order_list, name="order_list"),
     path("order_detail/<int:id>/", views.order_detail, name="order_detail"),
+    # ================================= SHIPPING ================================= #
+    path("shipping_admin/", views.shipping_admin, name="shipping_admin"),
+    path("shipping_create/", views.shipping_create, name="shipping_create"),
+    path("shipping_edit/<int:pk>/", views.shipping_edit, name="shipping_edit"),
+    path("shipping_delete/<int:pk>/", views.shipping_delete, name="shipping_delete"),
 ]

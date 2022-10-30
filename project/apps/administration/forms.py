@@ -10,6 +10,7 @@ from django.forms import (
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
+from project.apps.order.models import Shipping
 
 
 # ============================================================================ #
@@ -197,5 +198,25 @@ class HomeSliderForm(ModelForm):
             ),
             "cover": FileInput(
                 attrs={"class": "form-control", "placeholder": "Enter cover"}
+            ),
+        }
+
+
+# ================================= SHIPPING ================================= #
+
+
+class ShippingForm(ModelForm):
+    class Meta:
+        model = Shipping
+        fields = ["title", "price", "wight"]
+        widgets = {
+            "title": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "price": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter price"}
+            ),
+            "wight": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter wight"}
             ),
         }
