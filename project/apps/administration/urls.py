@@ -45,4 +45,7 @@ urlpatterns = [
         views.home_slider_delete,
         name="home_slider_delete",
     ),
+    # =================================== ORDER ================================== #
+    path("order_list/", views.order_list, name="order_list"),
+    path("order_detail/<int:id>/", views.order_detail, name="order_detail"),
 ]

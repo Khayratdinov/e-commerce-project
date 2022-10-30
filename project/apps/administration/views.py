@@ -12,6 +12,7 @@ from django.contrib import messages
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
+from project.apps.order.models import Order
 from project.apps.administration.forms import (
     CategoryForm,
     BookSliderForm,
@@ -480,3 +481,76 @@ def home_slider_delete(request, pk):
     home_slider.delete()
     messages.success(request, "Malumotlaringiz o'chirildi")
     return redirect("home_slider_admin")
+
+
+# ============================================================================ #
+#                                     ORDER                                    #
+# ============================================================================ #
+
+
+@seller_required
+def order_list(request):
+
+    if request.method == "POST":
+        order_id = request.POST["order_code"]
+        customer = request.POST["name"]
+        order_status = request.POST["status"]
+        price_from = request.POST["price_from"]
+        price_to = request.POST["price_to"]
+        created_date = request.POST["created_date"]
+        updated_date = request.POST["updated_date"]
+
+        if order_id:
+            orders = Order.objects.filter(id=order_id, is_paid=True)
+        else:
+            orders = Order.objects.filter(is_paid=True)
+
+        if customer:
+            orders = orders.filter(user__username__icontains=customer)
+        if order_status:
+            orders = orders.filter(status=order_status)
+        if price_from:
+            orders = orders.filter(total__gte=price_from)
+        if price_to:
+            orders = orders.filter(total__lte=price_to)
+        if created_date:
+            orders = orders.filter(create_at__icontains=created_date)
+        if updated_date:
+            orders = orders.filter(update_at__icontains=updated_date)
+
+    else:
+        orders = Order.objects.filter(is_paid=True)
+
+    paginator = Paginator(orders, 10)
+    page = request.GET.get("page")
+    try:
+        orders = paginator.page(page)
+    except PageNotAnInteger:
+        orders = paginator.page(1)
+    except EmptyPage:
+        orders = paginator.page(paginator.num_pages)
+
+    context = {
+        "orders": orders,
+    }
+
+    return render(request, "administration/order/order_list.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def order_detail(request, id):
+    if request.method == "POST":
+        status = request.POST["status"]
+        url = request.META.get("HTTP_REFERER")
+        order = Order.objects.get(pk=id)
+        order.status = status
+        order.save()
+        return redirect(url)
+    else:
+        order = Order.objects.get(pk=id)
+        print(order.shipping)
+        context = {"order": order}
+        return render(request, "administration/order/order_detail.html", context)
