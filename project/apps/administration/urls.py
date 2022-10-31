@@ -53,4 +53,9 @@ urlpatterns = [
     path("shipping_create/", views.shipping_create, name="shipping_create"),
     path("shipping_edit/<int:pk>/", views.shipping_edit, name="shipping_edit"),
     path("shipping_delete/<int:pk>/", views.shipping_delete, name="shipping_delete"),
+    # =================================== USER =================================== #
+    path("user_admin/", views.user_admin, name="user_admin"),
+    path("user_detail/<int:pk>/", views.user_detail, name="user_detail"),
+    path("user_edit/<int:pk>/", views.user_edit, name="user_edit"),
+    path("user_delete/<int:pk>/", views.user_delete, name="user_delete"),
 ]

@@ -8,6 +8,7 @@ from django.forms import inlineformset_factory
 from django.contrib.admin.views.decorators import user_passes_test
 from django.db.models import Avg
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
@@ -21,7 +22,10 @@ from project.apps.administration.forms import (
     BookCommentForm,
     HomeSliderForm,
     ShippingForm,
+    UserEditForm,
 )
+
+User = get_user_model()
 
 # ========================== CREATE YOUR VIEWS HERE. ========================= #
 
@@ -614,3 +618,79 @@ def shipping_delete(request, pk):
     shipping.delete()
     messages.success(request, "Malumotlar o'chirildi")
     return redirect("shipping_admin")
+
+
+# ============================================================================ #
+#                                     USER                                     #
+# ============================================================================ #
+
+
+@seller_required
+def user_admin(request):
+
+    if request.method == "POST":
+        keyword = request.POST["keyword"]
+        users = User.objects.filter(
+            username__icontains=keyword,
+            first_name__icontains=keyword,
+            last_name__icontains=keyword,
+        )
+
+    else:
+        keyword = {}
+        users = User.objects.all()
+
+    paginator = Paginator(users, 10)
+    page = request.GET.get("page")
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+    context = {
+        "users": users,
+        "keyword": keyword,
+    }
+    return render(request, "administration/user/user_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@admin_required
+def user_detail(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    context = {
+        "user": user,
+    }
+    return render(request, "administration/user/user_detail.html", context)
+
+
+# ============================================================================ #
+
+
+@admin_required
+def user_edit(request, pk):
+
+    user = get_object_or_404(User, pk=pk)
+    form = UserEditForm(request.POST or None, instance=user)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Malumotlaringiz yangilandi")
+        return redirect("user_admin")
+
+    context = {"form": form}
+
+    return render(request, "administration/user/user_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@admin_required
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user.delete()
+    messages.success(request, "Malumotlaringiz o'chirildi")
+    return redirect("user_admin")

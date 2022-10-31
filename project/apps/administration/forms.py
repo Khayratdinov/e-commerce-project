@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms import (
     ModelForm,
     TextInput,
@@ -12,6 +13,7 @@ from project.apps.book.models import Category, Book, BookSlider, Tag, BookCommen
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Shipping
 
+User = get_user_model()
 
 # ============================================================================ #
 #                                   BOOK APP                                   #
@@ -219,4 +221,24 @@ class ShippingForm(ModelForm):
             "wight": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter wight"}
             ),
+        }
+
+
+# ============================== USER EDIT FORM ============================== #
+
+
+class UserEditForm(ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "is_active",
+            "is_staff",
+            "is_superuser",
+        ]
+        widgets = {
+            "is_active": forms.CheckboxInput(
+                attrs={"class": "form-check-input", "id": "flexSwitchCheckChecked"}
+            ),
+            "is_staff": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "is_superuser": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
