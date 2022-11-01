@@ -1,3 +1,36 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+# ============================================================================ #
+
+from project.apps.book.models import Book
+
+
+User = get_user_model()
+
+
+# ================================= SHOPCART ================================= #
+
+
+class ShopCart(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="shopcart_user"
+    )
+    product = models.ForeignKey(
+        Book, on_delete=models.SET_NULL, null=True, related_name="shopcart_product"
+    )
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.product.title
+
+    @property
+    def price(self):
+        return self.product.price
+
+    @property
+    def image(self):
+        return self.product.coverpage
+
+    def amount(self):
+        return self.quantity * self.product.price

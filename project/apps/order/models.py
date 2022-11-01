@@ -36,6 +36,7 @@ class Order(models.Model):
     )
     is_paid = models.BooleanField(default=False)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    offline_sales = models.BooleanField(default=False)
 
     def __str__(self):
         return "{0}-{1}-{2}".format(self.id, self.date, self.full_name)

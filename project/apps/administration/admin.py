@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+# ============================================================================ #
+from project.apps.administration.models import ShopCart
+
+
+# ================================= REGISTER ================================= #
+admin.site.register(ShopCart)
