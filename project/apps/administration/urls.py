@@ -58,4 +58,16 @@ urlpatterns = [
     path("user_detail/<int:pk>/", views.user_detail, name="user_detail"),
     path("user_edit/<int:pk>/", views.user_edit, name="user_edit"),
     path("user_delete/<int:pk>/", views.user_delete, name="user_delete"),
+    # ================================= SHOP CART ================================ #
+    path(
+        "add_to_shopcart_admin/<str:slug>/",
+        views.add_to_shopcart,
+        name="add_to_shopcart_admin",
+    ),
+    path(
+        "delete_from_cart_admin/<int:id>/",
+        views.delete_from_cart,
+        name="delete_from_cart_admin",
+    ),
+    path("shopcart_admin/", views.shopcart, name="shopcart_admin"),
 ]

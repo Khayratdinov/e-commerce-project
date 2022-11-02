@@ -1,7 +1,7 @@
 import math
 
 # ============================================================================ #
-
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import inlineformset_factory
@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Order, Shipping
+from project.apps.administration.models import ShopCart
 from project.apps.administration.forms import (
     CategoryForm,
     BookSliderForm,
@@ -23,6 +24,7 @@ from project.apps.administration.forms import (
     HomeSliderForm,
     ShippingForm,
     UserEditForm,
+    ShopCartForm,
 )
 
 User = get_user_model()
@@ -694,3 +696,57 @@ def user_delete(request, pk):
     user.delete()
     messages.success(request, "Malumotlaringiz o'chirildi")
     return redirect("user_admin")
+
+
+# ============================================================================ #
+#                                   SHOP CART                                  #
+# ============================================================================ #
+
+
+@seller_required
+def add_to_shopcart(request, slug):
+    url = request.META.get("HTTP_REFERER")
+    current_user = request.user
+    product = Book.objects.get(slug=slug)
+    if request.method == "POST":
+        form = ShopCartForm(request.POST)
+        if form.is_valid():
+            data = ShopCart()
+            data.user_id = current_user.id
+            data.product_id = product.id
+            data.quantity = form.cleaned_data["quantity"]
+
+            data.save()
+        messages.success(request, "Mahsulot qoshildi")
+        return HttpResponseRedirect(url)
+
+    else:
+        data = ShopCart()
+        data.user_id = current_user.id
+        data.product_id = id
+        data.quantity = 1
+        data.save()  #
+        messages.success(request, "Mahsulot qoshildi")
+        return HttpResponseRedirect(url)
+
+
+@seller_required
+def shopcart(request):
+    current_user = request.user
+    shopcart = ShopCart.objects.filter(user_id=current_user.id)
+    total = 0
+    for rs in shopcart:
+        total += rs.product.price * rs.quantity
+    context = {
+        "shopcart": shopcart,
+        "total": total,
+    }
+    return render(request, "administration/order/shopCart_admin.html", context)
+
+
+@seller_required
+def delete_from_cart(request, id):
+    url = request.META.get("HTTP_REFERER")
+    ShopCart.objects.filter(id=id).delete()
+    messages.success(request, "Mahsulot o'chirildi")
+    return HttpResponseRedirect(url)

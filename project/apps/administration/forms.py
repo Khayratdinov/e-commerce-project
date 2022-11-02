@@ -12,6 +12,7 @@ from django.forms import (
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Shipping
+from project.apps.administration.models import ShopCart
 
 User = get_user_model()
 
@@ -242,3 +243,14 @@ class UserEditForm(ModelForm):
             "is_staff": forms.CheckboxInput(attrs={"class": "form-check-input"}),
             "is_superuser": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
+
+
+
+# ============================== ADD TO SHOPCART ============================= #
+
+
+class ShopCartForm(ModelForm):
+    class Meta:
+        model = ShopCart
+        fields = ['quantity']
+
