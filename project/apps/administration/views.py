@@ -750,3 +750,38 @@ def delete_from_cart(request, id):
     ShopCart.objects.filter(id=id).delete()
     messages.success(request, "Mahsulot o'chirildi")
     return HttpResponseRedirect(url)
+
+
+# ============================================================================ #
+#                                  ORDER ADMIN                                 #
+# ============================================================================ #
+
+
+@seller_required
+def order_dashboard(request):
+
+    if request.method == "POST":
+        keyword = request.POST["keyword"]
+        category_select = request.POST["category_select"]
+
+        if category_select == "all":
+            books = Book.objects.filter(title__icontains=keyword)
+        else:
+            books = Book.objects.filter(
+                title__icontains=keyword, category__title=category_select
+            )
+
+    else:
+        books = Book.objects.all()
+
+    categories = Category.objects.values_list("title", flat=True).distinct()
+    paginator = Paginator(books, 10)
+    page = request.GET.get("page")
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+    context = {"books": books, "categories": categories}
+    return render(request, "administration/order/order_dashboard.html", context)
