@@ -71,4 +71,19 @@ urlpatterns = [
         name="delete_from_cart_admin",
     ),
     path("shopcart_admin/", views.shopcart, name="shopcart_admin"),
+    # =============================== CATEGORY BLOG ============================== #
+    path("category_blog_admin/", views.category_blog_admin, name="category_blog_admin"),
+    path(
+        "category_blog_create/", views.category_blog_create, name="category_blog_create"
+    ),
+    path(
+        "category_blog_edit/<int:pk>/",
+        views.category_blog_edit,
+        name="category_blog_edit",
+    ),
+    path(
+        "category_blog_delete/<int:pk>/",
+        views.category_blog_delete,
+        name="category_blog_delete",
+    ),
 ]

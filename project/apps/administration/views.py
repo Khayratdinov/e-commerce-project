@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Order, Shipping
+from project.apps.blog.models import CategoryBlog
 from project.apps.administration.models import ShopCart
 from project.apps.administration.forms import (
     CategoryForm,
@@ -785,3 +786,78 @@ def order_dashboard(request):
         books = paginator.page(paginator.num_pages)
     context = {"books": books, "categories": categories}
     return render(request, "administration/order/order_dashboard.html", context)
+
+
+# ============================================================================ #
+#                                 BLOG CATEGORY                                #
+# ============================================================================ #
+
+
+@seller_required
+def category_blog_admin(request):
+    categories = CategoryBlog.objects.all()
+    paginator = Paginator(categories, 10)
+    page = request.GET.get("page")
+    try:
+        categories = paginator.page(page)
+    except PageNotAnInteger:
+        categories = paginator.page(1)
+    except EmptyPage:
+        categories = paginator.page(paginator.num_pages)
+    context = {"categories": categories}
+    return render(
+        request, "administration/category_blog/category_blog_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def category_blog_create(request):
+    if request.method == "POST":
+        form = CategoryBlogForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Categori qoshildi")
+            return redirect("category_blog_admin")
+    else:
+        form = CategoryBlogForm()
+    context = {"form": form}
+    return render(
+        request, "administration/category_blog/category_blog_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def category_blog_edit(request, pk):
+    category = CategoryBlog.objects.get(pk=pk)
+    if request.method == "POST":
+        form = CategoryBlogForm(request.POST, request.FILES, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Categori yangilandi")
+            return redirect("category_blog_admin")
+    else:
+        form = CategoryBlogForm(instance=category)
+    context = {"form": form, "category": category}
+    return render(
+        request, "administration/category_blog/category_blog_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def category_blog_delete(request, pk):
+    category = CategoryBlog.objects.get(pk=pk)
+    category.delete()
+    messages.success(request, "Categori o'chirildi")
+    return redirect("category_blog_admin")
+
+
+# ============================================================================ #

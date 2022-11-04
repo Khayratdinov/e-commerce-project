@@ -13,6 +13,7 @@ from project.apps.book.models import Category, Book, BookSlider, Tag, BookCommen
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
+from project.apps.blog.models import CategoryBlog
 
 User = get_user_model()
 
@@ -245,12 +246,34 @@ class UserEditForm(ModelForm):
         }
 
 
-
 # ============================== ADD TO SHOPCART ============================= #
 
 
 class ShopCartForm(ModelForm):
     class Meta:
         model = ShopCart
-        fields = ['quantity']
+        fields = ["quantity"]
 
+
+# =============================== CATEGORY BLOG ============================== #
+
+
+class CategoryBlogForm(ModelForm):
+    class Meta:
+        model = CategoryBlog
+        fields = [
+            "title_uz",
+            "title_ru",
+            "title_en",
+        ]
+        widgets = {
+            "title_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+        }
