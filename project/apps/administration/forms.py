@@ -13,7 +13,7 @@ from project.apps.book.models import Category, Book, BookSlider, Tag, BookCommen
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
-from project.apps.blog.models import CategoryBlog
+from project.apps.blog.models import CategoryBlog, Blog
 
 User = get_user_model()
 
@@ -276,4 +276,60 @@ class CategoryBlogForm(ModelForm):
             "title_en": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
             ),
+        }
+
+
+# ================================= BLOG FORM ================================ #
+
+
+class BlogForm(ModelForm):
+    class Meta:
+        model = Blog
+        fields = [
+            "title_uz",
+            "title_ru",
+            "title_en",
+            "description_uz",
+            "description_ru",
+            "description_en",
+            "text_uz",
+            "text_ru",
+            "text_en",
+            "image",
+            "category",
+            "status",
+        ]
+        widgets = {
+            "title_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "description_uz": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_ru": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_en": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "image": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter image"}
+            ),
+            "text_uz": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter text"}
+            ),
+            "text_ru": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter text"}
+            ),
+            "text_en": CKEditorWidget(
+                attrs={"class": "form-control", "placeholder": "Enter text"}
+            ),
+            "category": forms.Select(attrs={"class": "form-select"}),
+            "status": forms.Select(attrs={"class": "form-select"}),
         }

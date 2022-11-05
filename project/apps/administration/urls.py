@@ -86,4 +86,9 @@ urlpatterns = [
         views.category_blog_delete,
         name="category_blog_delete",
     ),
+    # =================================== BLOG =================================== #
+    path("blog_admin/", views.blog_admin, name="blog_admin"),
+    path("blog_create/", views.blog_create, name="blog_create"),
+    path("blog_edit/<int:pk>/", views.blog_edit, name="blog_edit"),
+    path("blog_delete/<int:pk>/", views.blog_delete, name="blog_delete"),
 ]

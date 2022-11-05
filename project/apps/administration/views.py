@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
 from project.apps.common.models import HomeSlider
 from project.apps.order.models import Order, Shipping
-from project.apps.blog.models import CategoryBlog
+from project.apps.blog.models import CategoryBlog, Blog
 from project.apps.administration.models import ShopCart
 from project.apps.administration.forms import (
     CategoryForm,
@@ -26,6 +26,8 @@ from project.apps.administration.forms import (
     ShippingForm,
     UserEditForm,
     ShopCartForm,
+    BlogForm,
+    CategoryBlogForm,
 )
 
 User = get_user_model()
@@ -858,6 +860,75 @@ def category_blog_delete(request, pk):
     category.delete()
     messages.success(request, "Categori o'chirildi")
     return redirect("category_blog_admin")
+
+
+# ============================================================================ #
+
+
+# ============================================================================ #
+#                                     BLOG                                     #
+# ============================================================================ #
+
+
+@seller_required
+def blog_admin(request):
+    blogs = Blog.objects.all()
+    paginator = Paginator(blogs, 10)
+    page = request.GET.get("page")
+    try:
+        blogs = paginator.page(page)
+    except PageNotAnInteger:
+        blogs = paginator.page(1)
+    except EmptyPage:
+        blogs = paginator.page(paginator.num_pages)
+    context = {"blogs": blogs}
+    return render(request, "administration/blog/blog_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def blog_create(request):
+    if request.method == "POST":
+        form = BlogForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Blog qoshildi")
+            return redirect("blog_admin")
+    else:
+        form = BlogForm()
+    context = {"form": form}
+    return render(request, "administration/blog/blog_create.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def blog_edit(request, pk):
+    blog = Blog.objects.get(pk=pk)
+    if request.method == "POST":
+        form = BlogForm(request.POST, request.FILES, instance=blog)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Blog yangilandi")
+            return redirect("blog_admin")
+    else:
+        form = BlogForm(instance=blog)
+    context = {"form": form, "blog": blog}
+    return render(request, "administration/blog/blog_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def blog_delete(request, pk):
+    blog = Blog.objects.get(pk=pk)
+    blog.delete()
+    messages.success(request, "Blog o'chirildi")
+    return redirect("blog_admin")
 
 
 # ============================================================================ #
