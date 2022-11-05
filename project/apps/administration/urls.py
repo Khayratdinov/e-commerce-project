@@ -23,28 +23,14 @@ urlpatterns = [
     path("tag_delete/<int:pk>/", views.tag_book_delete, name="tag_delete"),
     # =============================== BOOK COMMENT =============================== #
     path("book_comment_admin/", views.book_comment_admin, name="book_comment_admin"),
-    path(
-        "book_comment_detail/<int:pk>/",
-        views.book_comment_detail,
-        name="book_comment_detail",
-    ),
-    path(
-        "book_comment_edit/<int:pk>/", views.book_comment_edit, name="book_comment_edit"
-    ),
-    path(
-        "book_comment_delete/<int:pk>/",
-        views.book_comment_delete,
-        name="book_comment_delete",
-    ),
+    path("book_comment_detail/<int:pk>/",views.book_comment_detail,name="book_comment_detail",),
+    path("book_comment_edit/<int:pk>/", views.book_comment_edit, name="book_comment_edit"),
+    path("book_comment_delete/<int:pk>/",views.book_comment_delete,name="book_comment_delete",),
     # ================================ HOME SLIDER =============================== #
     path("home_slider_admin/", views.home_slider_admin, name="home_slider_admin"),
     path("home_slider_create/", views.home_slider_create, name="home_slider_create"),
     path("home_slider_edit/<int:pk>/", views.home_slider_edit, name="home_slider_edit"),
-    path(
-        "home_slider_delete/<int:pk>/",
-        views.home_slider_delete,
-        name="home_slider_delete",
-    ),
+    path("home_slider_delete/<int:pk>/",views.home_slider_delete,name="home_slider_delete",),
     # =================================== ORDER ================================== #
     path("order_dashboard/", views.order_dashboard, name="order_dashboard"),
     path("order_list/", views.order_list, name="order_list"),
@@ -60,32 +46,14 @@ urlpatterns = [
     path("user_edit/<int:pk>/", views.user_edit, name="user_edit"),
     path("user_delete/<int:pk>/", views.user_delete, name="user_delete"),
     # ================================= SHOP CART ================================ #
-    path(
-        "add_to_shopcart_admin/<str:slug>/",
-        views.add_to_shopcart,
-        name="add_to_shopcart_admin",
-    ),
-    path(
-        "delete_from_cart_admin/<int:id>/",
-        views.delete_from_cart,
-        name="delete_from_cart_admin",
-    ),
+    path("add_to_shopcart_admin/<str:slug>/",views.add_to_shopcart,name="add_to_shopcart_admin",),
+    path("delete_from_cart_admin/<int:id>/",views.delete_from_cart,name="delete_from_cart_admin",),
     path("shopcart_admin/", views.shopcart, name="shopcart_admin"),
     # =============================== CATEGORY BLOG ============================== #
     path("category_blog_admin/", views.category_blog_admin, name="category_blog_admin"),
-    path(
-        "category_blog_create/", views.category_blog_create, name="category_blog_create"
-    ),
-    path(
-        "category_blog_edit/<int:pk>/",
-        views.category_blog_edit,
-        name="category_blog_edit",
-    ),
-    path(
-        "category_blog_delete/<int:pk>/",
-        views.category_blog_delete,
-        name="category_blog_delete",
-    ),
+    path("category_blog_create/", views.category_blog_create, name="category_blog_create"),
+    path("category_blog_edit/<int:pk>/",views.category_blog_edit,name="category_blog_edit",),
+    path("category_blog_delete/<int:pk>/",views.category_blog_delete,name="category_blog_delete",),
     # =================================== BLOG =================================== #
     path("blog_admin/", views.blog_admin, name="blog_admin"),
     path("blog_create/", views.blog_create, name="blog_create"),
