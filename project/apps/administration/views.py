@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
-from project.apps.common.models import HomeSlider
+from project.apps.common.models import HomeSlider, HeadImages
 from project.apps.order.models import Order, Shipping
 from project.apps.blog.models import CategoryBlog, Blog
 from project.apps.administration.models import ShopCart
@@ -28,6 +28,7 @@ from project.apps.administration.forms import (
     ShopCartForm,
     BlogForm,
     CategoryBlogForm,
+    RandomBradcaumpImgForm,
 )
 
 User = get_user_model()
@@ -929,6 +930,81 @@ def blog_delete(request, pk):
     blog.delete()
     messages.success(request, "Blog o'chirildi")
     return redirect("blog_admin")
+
+
+# ============================================================================ #
+
+
+# ============================================================================ #
+#                            RANDOM BRADCAUMP IMAGES                           #
+# ============================================================================ #
+
+
+@seller_required
+def random_image_admin(request):
+    images = HeadImages.objects.all()
+    paginator = Paginator(images, 10)
+    page = request.GET.get("page")
+    try:
+        images = paginator.page(page)
+    except PageNotAnInteger:
+        images = paginator.page(1)
+    except EmptyPage:
+        images = paginator.page(paginator.num_pages)
+    context = {"images": images}
+    return render(
+        request, "administration/random_image/random_image_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def random_image_create(request):
+    if request.method == "POST":
+        form = RandomBradcaumpImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Rasmlar qoshildi")
+            return redirect("random_image_admin")
+    else:
+        form = RandomBradcaumpImgForm()
+    context = {"form": form}
+    return render(
+        request, "administration/random_image/random_image_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def random_image_edit(request, pk):
+    image = HeadImages.objects.get(pk=pk)
+    if request.method == "POST":
+        form = RandomBradcaumpImgForm(request.POST, request.FILES, instance=image)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Rasmlar yangilandi")
+            return redirect("random_image_admin")
+    else:
+        form = RandomBradcaumpImgForm(instance=image)
+    context = {"form": form, "image": image}
+    return render(
+        request, "administration/random_image/random_image_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def random_image_delete(request, pk):
+    image = HeadImages.objects.get(pk=pk)
+    image.delete()
+    messages.success(request, "Rasmlar o'chirildi")
+    return redirect("random_image_admin")
 
 
 # ============================================================================ #

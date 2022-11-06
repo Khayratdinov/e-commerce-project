@@ -9,11 +9,15 @@ from django.forms import (
 )
 
 # ============================================================================ #
+from ckeditor.widgets import CKEditorWidget
+
+# ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
-from project.apps.common.models import HomeSlider
+from project.apps.common.models import HomeSlider, HeadImages
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
 from project.apps.blog.models import CategoryBlog, Blog
+
 
 User = get_user_model()
 
@@ -331,5 +335,20 @@ class BlogForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter text"}
             ),
             "category": forms.Select(attrs={"class": "form-select"}),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ========================== RANDOMBRADCAUMPIMG FORM ========================= #
+
+
+class RandomBradcaumpImgForm(ModelForm):
+    class Meta:
+        model = HeadImages
+        fields = ["image", "status"]
+        widgets = {
+            "image": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter image"}
+            ),
             "status": forms.Select(attrs={"class": "form-select"}),
         }
