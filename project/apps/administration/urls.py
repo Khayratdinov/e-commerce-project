@@ -102,4 +102,15 @@ urlpatterns = [
         views.random_image_delete,
         name="random_image_delete",
     ),
+    # =============================== SETTING SITE =============================== #
+    path("setting_site_admin/", views.setting_site_admin, name="setting_site_admin"),
+    path("setting_site_create/", views.setting_site_create, name="setting_site_create"),
+    path(
+        "setting_site_edit/<int:pk>/", views.setting_site_edit, name="setting_site_edit"
+    ),
+    path(
+        "setting_site_delete/<int:pk>/",
+        views.setting_site_delete,
+        name="setting_site_delete",
+    ),
 ]

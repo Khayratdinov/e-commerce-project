@@ -13,7 +13,7 @@ from ckeditor.widgets import CKEditorWidget
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
-from project.apps.common.models import HomeSlider, HeadImages
+from project.apps.common.models import HomeSlider, HeadImages, CommonInfo
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
 from project.apps.blog.models import CategoryBlog, Blog
@@ -349,6 +349,72 @@ class RandomBradcaumpImgForm(ModelForm):
         widgets = {
             "image": FileInput(
                 attrs={"class": "form-control", "placeholder": "Enter image"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ================================== SETTING ================================= #
+
+
+class CommonInfoForm(ModelForm):
+    class Meta:
+        model = CommonInfo
+        fields = [
+            "description_contact_uz",
+            "description_contact_ru",
+            "description_contact_en",
+            "description_footer_uz",
+            "description_footer_ru",
+            "description_footer_en",
+            "logo",
+            "phone",
+            "email",
+            "address",
+            "instagram",
+            "telegram",
+            "facebook",
+            "status",
+        ]
+        widgets = {
+            "description_contact_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_contact_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_contact_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_footer_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_footer_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "description_footer_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description"}
+            ),
+            "logo": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter image"}
+            ),
+            "phone": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter phone"}
+            ),
+            "email": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter email"}
+            ),
+            "address": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter address"}
+            ),
+            "instagram": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter url"}
+            ),
+            "telegram": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter url"}
+            ),
+            "facebook": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter url"}
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
         }

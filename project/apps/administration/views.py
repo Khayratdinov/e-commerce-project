@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
-from project.apps.common.models import HomeSlider, HeadImages
+from project.apps.common.models import HomeSlider, HeadImages, CommonInfo
 from project.apps.order.models import Order, Shipping
 from project.apps.blog.models import CategoryBlog, Blog
 from project.apps.administration.models import ShopCart
@@ -29,6 +29,7 @@ from project.apps.administration.forms import (
     BlogForm,
     CategoryBlogForm,
     RandomBradcaumpImgForm,
+    CommonInfoForm,
 )
 
 User = get_user_model()
@@ -1008,3 +1009,67 @@ def random_image_delete(request, pk):
 
 
 # ============================================================================ #
+
+
+# ============================================================================ #
+#                                 SETTING SITE                                 #
+# ============================================================================ #
+
+
+@seller_required
+def setting_site_admin(request):
+    setting = CommonInfo.objects.all()[:1]
+    context = {"setting": setting}
+    return render(
+        request, "administration/setting_site/setting_site_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def setting_site_create(request):
+    if request.method == "POST":
+        form = CommonInfoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sozlamalar qoshildi")
+            return redirect("setting_site_admin")
+    else:
+        form = CommonInfoForm()
+    context = {"form": form}
+    return render(
+        request, "administration/setting_site/setting_site_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def setting_site_edit(request, pk):
+    setting = CommonInfo.objects.get(pk=pk)
+    if request.method == "POST":
+        form = CommonInfoForm(request.POST, request.FILES, instance=setting)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sozlamalar yangilandi")
+            return redirect("setting_site_admin")
+    else:
+        form = CommonInfoForm(instance=setting)
+    context = {"form": form, "setting": setting}
+    return render(
+        request, "administration/setting_site/setting_site_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def setting_site_delete(request, pk):
+    setting = CommonInfo.objects.get(pk=pk)
+    setting.delete()
+    messages.success(request, "Sozlamalar o'chirildi")
+    return redirect("setting_site_admin")
