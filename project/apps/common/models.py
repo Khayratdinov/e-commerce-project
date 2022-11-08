@@ -86,3 +86,29 @@ class HeadImages(BaseModel):
         blank=True,
     )
     status = models.CharField(max_length=15, choices=STATUS, default="True")
+
+
+# ============================== CONTACTMESSAGE ============================== #
+
+
+class ContactMessage(models.Model):
+
+    STATUS = (
+        ("True", "Oqilgan"),
+        ("False", "Oqilmagan"),
+    )
+
+    name = models.CharField(max_length=222)
+    phone = models.CharField(max_length=222)
+    subject = models.CharField(blank=True, max_length=255)
+    message = models.TextField(max_length=500)
+    ip = models.CharField(max_length=155, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS, default="False")
+    create_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False, editable=False)
+
+    class Meta:
+        ordering = ["-create_at"]
+
+    def __str__(self):
+        return self.name
