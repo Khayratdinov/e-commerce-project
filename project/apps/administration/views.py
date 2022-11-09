@@ -12,7 +12,12 @@ from django.contrib.auth import get_user_model
 
 # ============================================================================ #
 from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
-from project.apps.common.models import HomeSlider, HeadImages, CommonInfo
+from project.apps.common.models import (
+    HomeSlider,
+    HeadImages,
+    CommonInfo,
+    ContactMessage,
+)
 from project.apps.order.models import Order, Shipping
 from project.apps.blog.models import CategoryBlog, Blog
 from project.apps.administration.models import ShopCart
@@ -1073,3 +1078,61 @@ def setting_site_delete(request, pk):
     setting.delete()
     messages.success(request, "Sozlamalar o'chirildi")
     return redirect("setting_site_admin")
+
+
+# ============================================================================ #
+#                                CONTACT MESSAGE                               #
+# ============================================================================ #
+
+
+@seller_required
+def contact_message_admin(request):
+
+    contact_messages = ContactMessage.objects.all()
+    paginator = Paginator(contact_messages, 10)
+    page = request.GET.get("page")
+    try:
+        contact_messages = paginator.page(page)
+    except PageNotAnInteger:
+        contact_messages = paginator.page(1)
+    except EmptyPage:
+        contact_messages = paginator.page(paginator.num_pages)
+
+    context = {
+        "contact_messages": contact_messages,
+    }
+    return render(
+        request, "administration/contact_message/contact_message_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def contact_message_detail(request, pk):
+    contact_message = ContactMessage.objects.get(pk=pk)
+    if request.method == "POST":
+        contact_message.status = request.POST.get("status")
+        contact_message.save()
+        return redirect("contact_message_admin")
+    else:
+        context = {
+            "contact": contact_message,
+        }
+    contact_message.read = True
+    contact_message.save()
+    return render(
+        request, "administration/contact_message/contact_message_detail.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def contact_message_delete(request, pk):
+    contact_message = ContactMessage.objects.get(pk=pk)
+    contact_message.delete()
+    messages.success(request, "Malumotlaringiz o'chirildi ")
+    return redirect("contact_message_admin")

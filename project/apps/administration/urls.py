@@ -113,4 +113,20 @@ urlpatterns = [
         views.setting_site_delete,
         name="setting_site_delete",
     ),
+    # ============================== CONTACT MESSAGE ============================= #
+    path(
+        "contact_message_admin/",
+        views.contact_message_admin,
+        name="contact_message_admin",
+    ),
+    path(
+        "contact_message_detail/<int:pk>/",
+        views.contact_message_detail,
+        name="contact_message_detail",
+    ),
+    path(
+        "contact_message_delete/<int:pk>/",
+        views.contact_message_delete,
+        name="contact_message_delete",
+    ),
 ]
