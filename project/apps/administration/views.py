@@ -1,4 +1,5 @@
 import math
+import datetime
 
 # ============================================================================ #
 from django.http import HttpResponseRedirect
@@ -6,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms import inlineformset_factory
 from django.contrib.admin.views.decorators import user_passes_test
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 
@@ -69,6 +70,83 @@ def seller_required(view_func):
 def index(request):
 
     return render(request, "administration/dashboard.html")
+
+
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
+#                                ADMIN DASHBOARD                               #
+# :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
+
+
+@seller_required
+def index(request):
+
+    all_orders_count = Order.objects.filter(is_paid=True).count()
+
+    total_sum_all_orders = (
+        Order.objects.filter(is_paid=True).aggregate(Sum("total")).get("total__sum")
+    )
+
+    all_users_count = User.objects.all().count()
+
+    all_books_count = Book.objects.all().count()
+
+    all_offline_sales_count = Order.objects.filter(offline_sales=True).count()
+
+    all_online_sales_count = Order.objects.filter(offline_sales=False).count()
+
+    new_orders = Order.objects.filter(is_paid=True, status="New")
+    new_orders_count = new_orders.count()
+
+    new_messages = ContactMessage.objects.filter(status="False")
+    new_messages_count = new_messages.count()
+
+    today_comments = BookComment.objects.filter(create_at=datetime.date.today()).count()
+
+    today_orders = Order.objects.filter(is_paid=True, create_at=datetime.date.today())
+    today_orders_count = today_orders.count()
+
+    total_sum = 0
+    for order in today_orders:
+        total_sum += order.total
+
+    today_offline_orders = Order.objects.filter(
+        create_at=datetime.date.today(), offline_sales=True
+    )
+    today_offline_orders_count = today_offline_orders.count()
+
+    total_sum_offline = 0
+    for order in today_offline_orders:
+        total_sum_offline += order.total
+
+    today_online_orders = Order.objects.filter(
+        is_paid=True, create_at=datetime.date.today(), offline_sales=False
+    )
+    today_online_orders_count = today_online_orders.count()
+
+    total_sum_online = 0
+    for order in today_online_orders:
+        total_sum_online += order.total
+
+    context = {
+        "all_orders_count": all_orders_count,
+        "all_offline_sales_count": all_offline_sales_count,
+        "all_online_sales_count": all_online_sales_count,
+        "total_sum_all_orders": total_sum_all_orders,
+        "all_users_count": all_users_count,
+        "all_books_count": all_books_count,
+        "new_orders_count": new_orders_count,
+        "new_orders": new_orders,
+        "new_messages": new_messages,
+        "new_messages_count": new_messages_count,
+        "today_comments": today_comments,
+        "today_orders_count": today_orders_count,
+        "total_sum": total_sum,
+        "today_offline_orders_count": today_offline_orders_count,
+        "total_sum_offline": total_sum_offline,
+        "today_online_orders_count": today_online_orders_count,
+        "total_sum_online": total_sum_online,
+    }
+    return render(request, "administration/dashboard.html", context)
 
 
 # ============================================================================ #
