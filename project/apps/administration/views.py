@@ -67,11 +67,6 @@ def seller_required(view_func):
     return decorated_view_func
 
 
-def index(request):
-
-    return render(request, "administration/dashboard.html")
-
-
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 #                                ADMIN DASHBOARD                               #
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
@@ -147,6 +142,67 @@ def index(request):
         "total_sum_online": total_sum_online,
     }
     return render(request, "administration/dashboard.html", context)
+
+
+# ============================================================================ #
+#                               GENERAL DASHBOARD                              #
+# ============================================================================ #
+
+
+@seller_required
+def general_dashboard(request):
+
+    all_orders_count = Order.objects.filter(is_paid=True).count()
+
+    total_sum_all_orders = (
+        Order.objects.filter(is_paid=True).aggregate(Sum("total")).get("total__sum")
+    )
+
+    all_users_count = User.objects.all().count()
+
+    all_staff_count = User.objects.filter(is_staff=True).count()
+
+    all_books_count = Book.objects.all().count()
+
+    all_offline_sales_count = Order.objects.filter(offline_sales=True).count()
+
+    total_sum_all_offline_sales = (
+        Order.objects.filter(offline_sales=True)
+        .aggregate(Sum("total"))
+        .get("total__sum")
+    )
+
+    all_online_sales_count = Order.objects.filter(
+        is_paid=True, offline_sales=False
+    ).count()
+
+    total_sum_all_online_sales = (
+        Order.objects.filter(is_paid=True, offline_sales=False)
+        .aggregate(Sum("total"))
+        .get("total__sum")
+    )
+
+    all_news_count = Blog.objects.all().count()
+
+    all_book_comments_count = BookComment.objects.all().count()
+
+    all_contact_message_count = ContactMessage.objects.all().count()
+
+    context = {
+        "all_orders_count": all_orders_count,
+        "all_offline_sales_count": all_offline_sales_count,
+        "total_sum_all_offline_sales": total_sum_all_offline_sales,
+        "all_online_sales_count": all_online_sales_count,
+        "total_sum_all_online_sales": total_sum_all_online_sales,
+        "total_sum_all_orders": total_sum_all_orders,
+        "all_users_count": all_users_count,
+        "all_staff_count": all_staff_count,
+        "all_books_count": all_books_count,
+        "all_contact_message_count": all_contact_message_count,
+        "all_book_comments_count": all_book_comments_count,
+        "all_news_count": all_news_count,
+    }
+    return render(request, "administration/dashboard/general_dashboard.html", context)
 
 
 # ============================================================================ #

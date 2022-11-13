@@ -6,6 +6,7 @@ from project.apps.administration import views
 
 urlpatterns = [
     path("", views.index, name="dashboard"),
+    path("general_dashboard/", views.general_dashboard, name="general_dashboard"),
     # ================================= CATEGORY ================================= #
     path("category_admin/", views.category_admin, name="category_admin"),
     path("category_create/", views.category_create, name="category_create"),
