@@ -19,7 +19,7 @@ from project.apps.common.models import (
     CommonInfo,
     ContactMessage,
 )
-from project.apps.order.models import Order, Shipping
+from project.apps.order.models import Order, Shipping, OrderLineItem
 from project.apps.blog.models import CategoryBlog, Blog
 from project.apps.administration.models import ShopCart
 from project.apps.administration.forms import (
@@ -203,6 +203,181 @@ def general_dashboard(request):
         "all_news_count": all_news_count,
     }
     return render(request, "administration/dashboard/general_dashboard.html", context)
+
+
+# ============================================================================ #
+#                               WEEKLY_DASHBOARD                               #
+# ============================================================================ #
+
+
+@seller_required
+def weekly_dashboard(request):
+
+    users_week = User.objects.filter(
+        date_joined__week=datetime.date.today().isocalendar()[1]
+    ).count()
+
+    users_count = User.objects.all().count()
+
+    # ========================= OTKAN HAFTANING MIJOZLARI ======================== #
+
+    last_week_users = User.objects.filter(
+        date_joined__week=datetime.date.today().isocalendar()[1] - 1
+    ).count()
+
+    # ========================== MIJOZLARNING OSISH % TA ========================= #
+
+    if last_week_users == 0:
+        last_week_and_this_week_count_users = 0
+    else:
+        last_week_and_this_week_count_users = (users_week / last_week_users - 1) * 100
+
+    # ========================== UMIMIY BUYIRTMALAR SONI ========================= #
+
+    orders_week = Order.objects.filter(
+        is_paid=True, create_at__week=datetime.date.today().isocalendar()[1]
+    )
+    count_orders_week = orders_week.count()
+
+    # ====================== UMIMIY BUYIRTMALARNING DAROMATI ===================== #
+    total_price_week = 0
+    for order in orders_week:
+
+        total_price_week += order.total
+
+    # ========================= OTKAN HAFTA BUYIRTMALARI ========================= #
+
+    last_week_orders = Order.objects.filter(
+        is_paid=True, create_at__week=datetime.date.today().isocalendar()[1] - 1
+    )
+    last_week_orders_count = last_week_orders.count()
+
+    # ========================= OTKAN HAFTANING DAROMATI ========================= #
+
+    last_week_total_price = 0
+
+    for order in last_week_orders:
+        last_week_total_price += order.total
+
+    # ========================== BUYIRTMALAR OSISH % TA ========================== #
+
+    if last_week_orders_count == 0:
+        last_week_and_this_week_orders_count = 0
+    else:
+        last_week_and_this_week_orders_count = (
+            count_orders_week / last_week_orders_count - 1
+        ) * 100
+
+    # ========================== DAROMATNING OSISH % TA ========================== #
+
+    if last_week_total_price == 0:
+        last_week_and_this_week_total_price = 0
+    else:
+        last_week_and_this_week_total_price = (
+            total_price_week / last_week_total_price - 1
+        ) * 100
+
+    # ========================= OFFLINE BUYIRTMALAR SONI ========================= #
+
+    offline_orders_week = Order.objects.filter(
+        create_at__week=datetime.date.today().isocalendar()[1], offline_sales=True
+    )
+    offline_count_orders_week = offline_orders_week.count()
+
+    # ======================= OFFLINE BUYIRTMALAR DAROMATI ======================= #
+
+    offline_total_price_week = 0
+    for order in offline_orders_week:
+        offline_total_price_week += order.total
+
+    # ========================== ONLINE BUYIRTMALAR SONI ========================= #
+
+    online_orders_week = Order.objects.filter(
+        create_at__week=datetime.date.today().isocalendar()[1],
+        offline_sales=False,
+        is_paid=True,
+    )
+    online_count_orders_week = online_orders_week.count()
+
+    # ======================== ONLINE BUYIRTMALAR DAROMATI ======================= #
+
+    online_total_price_week = 0
+    for order in online_orders_week:
+        online_total_price_week += order.total
+
+    # =============== SHU HAFTANING ENG KOP SOTILGAN TOP 10 KITOBI =============== #
+
+    best_seller_books = (
+        OrderLineItem.objects.filter(
+            order__create_at__week=datetime.date.today().isocalendar()[1]
+        )
+        .values("product")
+        .annotate(total=Sum("quantity"))
+        .order_by("-total")[:10]
+    )
+
+    best_seller_books_list = []
+    for book in best_seller_books:
+        best_seller_books_list.append(Book.objects.get(id=book["product"]))
+
+    # ============================= WEEKLY STATISTICS ============================ #
+
+    # ================= SOTILGAN KITOBLAR SONI BOYICHA STATISTICA ================ #
+
+    count_orders_day_in_week = []
+    date = datetime.date.today()
+    week = date - datetime.timedelta(date.weekday())
+    weekdays = [week + datetime.timedelta(i) for i in range(7)]
+    for day in weekdays:
+        count_orders_day_in_week.append(
+            Order.objects.filter(
+                is_paid=True,
+                create_at__day=day.day,
+                create_at__month=day.month,
+                create_at__year=day.year,
+            ).count()
+        )
+
+    # ======================== DAROMAT BOYICHA STATISTICA ======================== #
+
+    orders_day_in_week = []
+    date = datetime.date.today()
+    week = date - datetime.timedelta(date.weekday())
+    weekdays = [week + datetime.timedelta(i) for i in range(7)]
+    for day in weekdays:
+        orders_day = Order.objects.filter(
+            is_paid=True,
+            create_at__day=day.day,
+            create_at__month=day.month,
+            create_at__year=day.year,
+        )
+        total_price_day = 0
+        for order in orders_day:
+            total_price_day += order.total
+        orders_day_in_week.append(total_price_day)
+
+    context = {
+        "users_week": users_week,
+        "users_count": users_count,
+        "total_price_week": total_price_week,
+        "count_orders_week": count_orders_week,
+        "last_week_total_price": last_week_total_price,
+        "last_week_and_this_week_total_price": last_week_and_this_week_total_price,
+        "last_week_and_this_week_count_users": last_week_and_this_week_count_users,
+        "last_week_users": last_week_users,
+        "last_week_orders_count": last_week_orders_count,
+        "last_week_and_this_week_orders_count": last_week_and_this_week_orders_count,
+        "offline_total_price_week": offline_total_price_week,
+        "offline_count_orders_week": offline_count_orders_week,
+        "online_total_price_week": online_total_price_week,
+        "online_count_orders_week": online_count_orders_week,
+        "orders_week": orders_week,
+        "best_seller_books_list": best_seller_books_list,
+        "count_orders_day_in_week": count_orders_day_in_week,
+        "orders_day_in_week": orders_day_in_week,
+    }
+
+    return render(request, "administration/dashboard/weekly_dashboard.html", context)
 
 
 # ============================================================================ #
