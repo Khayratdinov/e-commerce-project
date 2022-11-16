@@ -8,6 +8,7 @@ urlpatterns = [
     path("", views.index, name="dashboard"),
     path("general_dashboard/", views.general_dashboard, name="general_dashboard"),
     path("weekly_dashboard/", views.weekly_dashboard, name="weekly_dashboard"),
+    path("monthly_dashboard/", views.monthly_dashboard, name="monthly_dashboard"),
     # ================================= CATEGORY ================================= #
     path("category_admin/", views.category_admin, name="category_admin"),
     path("category_create/", views.category_create, name="category_create"),

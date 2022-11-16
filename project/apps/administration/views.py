@@ -381,6 +381,168 @@ def weekly_dashboard(request):
 
 
 # ============================================================================ #
+
+
+
+
+# ============================================================================ #
+#                               MONTHLY DASHBOARD                              #
+# ============================================================================ #
+
+
+
+@seller_required
+def monthly_dashboard(request):
+
+    # ======================== SHU OYNING YANGI MIJOZLARI ======================== #
+
+    users_month = User.objects.filter(
+        date_joined__month=datetime.date.today().month
+    ).count()
+    users_count = User.objects.all().count()
+
+    # ========================== OTKAN OYNING MIJOZLARI ========================== #
+
+    last_month_users = User.objects.filter(
+        date_joined__month=datetime.date.today().month - 1
+    ).count()
+
+    # =========================== MIJOZLAR OSISHI % TA =========================== #
+
+    if last_month_users == 0:
+        users_growth = 0
+    else:
+        users_growth = (users_month / last_month_users - 1) * 100
+
+    # ======================== SHU OYNING BUYURTMALAR SONI ======================= #
+
+    orders_month = Order.objects.filter(
+        is_paid=True, create_at__month=datetime.date.today().month
+    )
+    count_orders_month = orders_month.count()
+
+    # ======================= OTKAN OYNING BUYIRTMALAR SONI ====================== #
+
+    last_month_orders = Order.objects.filter(
+        is_paid=True, create_at__month=datetime.date.today().month - 1
+    )
+    last_month_orders_count = last_month_orders.count()
+
+    # ========================== BUYIRTMALAR OSISHI % TA ========================= #
+
+    if last_month_orders_count == 0:
+        orders_growth = 0
+    else:
+        orders_growth = (count_orders_month / last_month_orders_count - 1) * 100
+
+    # ============================ SHU OYNING DAROMATI =========================== #
+
+    total_price_month = 0
+    for order in orders_month:
+        total_price_month += order.total
+
+    # =========================== OTKAN OYNING DAROMATI ========================== #
+
+    last_month_total_price = 0
+    for order in last_month_orders:
+        last_month_total_price += order.total
+
+    # ============================ DAROMAT OSISHI % TA =========================== #
+
+    if last_month_total_price == 0:
+        total_price_growth = 0
+    else:
+        total_price_growth = (total_price_month / last_month_total_price - 1) * 100
+
+    # =================== OFFLINE BUYURTMALAR SONI VA DAROMATI =================== #
+
+    offline_orders_month = Order.objects.filter(
+        create_at__month=datetime.date.today().month, offline_sales=True
+    )
+    offline_count_orders_month = offline_orders_month.count()
+    offline_total_price_month = 0
+    for order in offline_orders_month:
+        offline_total_price_month += order.total
+
+    # ==================== ONLINE BUYURTMALAR SONI VA DAROMATI =================== #
+
+    online_orders_month = Order.objects.filter(
+        is_paid=True, create_at__month=datetime.date.today().month, offline_sales=False
+    )
+    online_count_orders_month = online_orders_month.count()
+    online_total_price_month = 0
+    for order in online_orders_month:
+        online_total_price_month += order.total
+
+    # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
+
+    best_seller_books = (
+        OrderLineItem.objects.filter(order__create_at__month=datetime.date.today().month)
+        .values("product")
+        .annotate(total=Sum("quantity"))
+        .order_by("-total")[:10]
+    )
+
+    best_seller_books_list = []
+    for book in best_seller_books:
+        best_seller_books_list.append(Book.objects.get(id=book["product"]))
+
+    # ============================ MONTHLY STATISTICS ============================ #
+
+    # ===================== SOTILGAN KITOBLAR SONI BOYICHA STATISTICA ============= #
+
+    count_orders_day_in_month = []
+    date = datetime.date.today()
+    month = date - datetime.timedelta(date.day - 1)
+    for i in range(0, date.day):
+        count_orders_day_in_month.append(
+            Order.objects.filter(
+                is_paid=True, create_at__month=month.month, create_at__day=month.day + i
+            ).count()
+        )
+
+    # ======================== DAROMAT BOYICHA STATISTICA ======================== #
+
+    total_price_day_in_month = []
+
+    start_day = datetime.date.today().replace(day=1).day
+
+    today = datetime.date.today().day
+    for day in range(start_day, today + 1):
+        orders_day = Order.objects.filter(
+            is_paid=True,
+            create_at__month=datetime.date.today().month,
+            create_at__day=day,
+        )
+        total_price_day = 0
+        for order in orders_day:
+            total_price_day += order.total
+        total_price_day_in_month.append(total_price_day)
+
+    context = {
+        "total_price_month": total_price_month,
+        "count_orders_month": count_orders_month,
+        "offline_count_orders_month": offline_count_orders_month,
+        "offline_total_price_month": offline_total_price_month,
+        "last_month_orders_count": last_month_orders_count,
+        "orders_growth": orders_growth,
+        "last_month_total_price": last_month_total_price,
+        "total_price_growth": total_price_growth,
+        "last_month_users": last_month_users,
+        "users_growth": users_growth,
+        "online_count_orders_month": online_count_orders_month,
+        "online_total_price_month": online_total_price_month,
+        "best_seller_books_list": best_seller_books_list,
+        "users_month": users_month,
+        "users_count": users_count,
+        "count_orders_day_in_month": count_orders_day_in_month,
+        "total_price_day_in_month": total_price_day_in_month,
+    }
+
+    return render(request, "administration/dashboard/monthly_dashboard.html", context)
+
+
+# ============================================================================ #
 #                                 CATEGORY BOOK                                #
 # ============================================================================ #
 
