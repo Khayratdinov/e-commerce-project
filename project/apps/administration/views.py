@@ -542,6 +542,133 @@ def monthly_dashboard(request):
     return render(request, "administration/dashboard/monthly_dashboard.html", context)
 
 
+
+
+
+
+# ============================================================================ #
+#                               YEARLY DASHBOARD                               #
+# ============================================================================ #
+
+@seller_required
+def yearly_dashboard(request):
+
+
+    # =========================== SHU YILNING MIJOZLARI ========================== #
+
+    users_year = User.objects.filter(
+                                            date_joined__year=datetime.date.today().year
+                                            ).count()
+    users_count = User.objects.all().count()
+
+    # ======================= BUYURTMALAR SONI VA DAROMATI ======================= #
+
+    orders_year = Order.objects.filter(is_paid=True,create_at__year=datetime.date.today().year)
+    count_orders_year = orders_year.count()
+
+    total_price_year = 0
+    for order in orders_year:
+        total_price_year += order.total
+
+
+    # =================== OFFLINE BUYURTMALAR SONI VA DAROMATI =================== #
+
+    offline_orders_year = Order.objects.filter(
+                                                create_at__year=datetime.date.today().year, 
+                                                offline_sales=True
+                                                )
+    offline_count_orders_year = offline_orders_year.count()
+    offline_total_price_year = 0
+    for order in offline_orders_year:
+        offline_total_price_year += order.total
+    
+
+
+    # ==================== ONLINE BUYURTMALAR SONI VA DAROMATI =================== #
+
+    online_orders_year = Order.objects.filter(is_paid=True,
+                                              create_at__year=datetime.date.today().year, 
+                                              offline_sales=False
+                                              )
+    online_count_orders_year = online_orders_year.count()
+    online_total_price_year = 0
+    for order in online_orders_year:
+        online_total_price_year += order.total
+
+    
+    # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
+
+
+    best_seller_books = OrderLineItem.objects.filter(
+                                                    order__create_at__year=datetime.date.today().year) \
+                                                    .values('product') \
+                                                    .annotate(total=Sum('quantity')) \
+                                                    .order_by('-total')[:10]
+
+    best_seller_books_list = []
+    for book in best_seller_books:
+        best_seller_books_list.append(Book.objects.get(id=book['product']))
+
+
+
+  # ============================= YEARLY STATISTICS ============================ #
+
+
+    # ===================== SOTILGAN KITOBLAR SONI BOYICHA STATISTICA ============= #
+
+
+    count_orders_month_in_year = []
+    start_month = datetime.date.today().replace(month=1).month
+    today_month = datetime.date.today().month
+    for month in range(start_month, today_month+1):
+        count_orders_month_in_year.append(Order.objects.filter(is_paid=True,
+                                                               create_at__month=month, 
+                                                               create_at__year=datetime.date.today().year
+                                                               ).count())
+
+
+    # ======================== DAROMAT BOYICHA STATISTICA ======================== #
+
+
+
+    total_price_month_in_year = []
+    start_month = datetime.date.today().replace(month=1).month
+    today_month = datetime.date.today().month
+    for month in range(start_month, today_month+1):
+        orders_month = Order.objects.filter(is_paid=True,
+                                            create_at__year=datetime.date.today().year, 
+                                            create_at__month=month
+                                            )
+        total_price_month = 0
+        for order in orders_month:
+            total_price_month += order.total
+        total_price_month_in_year.append(total_price_month)
+
+
+
+    context = {
+
+        'total_price_year': total_price_year,
+        'count_orders_year': count_orders_year,
+
+        'offline_count_orders_year': offline_count_orders_year,
+        'offline_total_price_year': offline_total_price_year,
+
+        'online_count_orders_year': online_count_orders_year,
+        'online_total_price_year': online_total_price_year,
+
+        'best_seller_books_list': best_seller_books_list,
+        'users_year': users_year,
+        'users_count': users_count,
+        'orders_year': orders_year,
+
+        'count_orders_month_in_year': count_orders_month_in_year,
+        'total_price_month_in_year': total_price_month_in_year,
+
+    }
+    return render(request, 'administration/dashboard/yearly_dashboard.html', context)
+
+
 # ============================================================================ #
 #                                 CATEGORY BOOK                                #
 # ============================================================================ #
