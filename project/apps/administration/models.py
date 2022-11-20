@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 # ============================================================================ #
 
 from project.apps.book.models import Book
+from project.apps.common.models import BaseModel
 
 
 User = get_user_model()
@@ -12,7 +13,7 @@ User = get_user_model()
 # ================================= SHOPCART ================================= #
 
 
-class ShopCart(models.Model):
+class ShopCart(BaseModel):
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="shopcart_user"
     )

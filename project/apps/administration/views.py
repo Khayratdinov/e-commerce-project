@@ -95,9 +95,9 @@ def index(request):
     new_messages = ContactMessage.objects.filter(status="False")
     new_messages_count = new_messages.count()
 
-    today_comments = BookComment.objects.filter(create_at=datetime.date.today()).count()
+    today_comments = BookComment.objects.filter(created_at=datetime.date.today()).count()
 
-    today_orders = Order.objects.filter(is_paid=True, create_at=datetime.date.today())
+    today_orders = Order.objects.filter(is_paid=True, created_at=datetime.date.today())
     today_orders_count = today_orders.count()
 
     total_sum = 0
@@ -105,7 +105,7 @@ def index(request):
         total_sum += order.total
 
     today_offline_orders = Order.objects.filter(
-        create_at=datetime.date.today(), offline_sales=True
+        created_at=datetime.date.today(), offline_sales=True
     )
     today_offline_orders_count = today_offline_orders.count()
 
@@ -114,7 +114,7 @@ def index(request):
         total_sum_offline += order.total
 
     today_online_orders = Order.objects.filter(
-        is_paid=True, create_at=datetime.date.today(), offline_sales=False
+        is_paid=True, created_at=datetime.date.today(), offline_sales=False
     )
     today_online_orders_count = today_online_orders.count()
 
@@ -235,7 +235,7 @@ def weekly_dashboard(request):
     # ========================== UMIMIY BUYIRTMALAR SONI ========================= #
 
     orders_week = Order.objects.filter(
-        is_paid=True, create_at__week=datetime.date.today().isocalendar()[1]
+        is_paid=True, created_at__week=datetime.date.today().isocalendar()[1]
     )
     count_orders_week = orders_week.count()
 
@@ -248,7 +248,7 @@ def weekly_dashboard(request):
     # ========================= OTKAN HAFTA BUYIRTMALARI ========================= #
 
     last_week_orders = Order.objects.filter(
-        is_paid=True, create_at__week=datetime.date.today().isocalendar()[1] - 1
+        is_paid=True, created_at__week=datetime.date.today().isocalendar()[1] - 1
     )
     last_week_orders_count = last_week_orders.count()
 
@@ -280,7 +280,7 @@ def weekly_dashboard(request):
     # ========================= OFFLINE BUYIRTMALAR SONI ========================= #
 
     offline_orders_week = Order.objects.filter(
-        create_at__week=datetime.date.today().isocalendar()[1], offline_sales=True
+        created_at__week=datetime.date.today().isocalendar()[1], offline_sales=True
     )
     offline_count_orders_week = offline_orders_week.count()
 
@@ -293,7 +293,7 @@ def weekly_dashboard(request):
     # ========================== ONLINE BUYIRTMALAR SONI ========================= #
 
     online_orders_week = Order.objects.filter(
-        create_at__week=datetime.date.today().isocalendar()[1],
+        created_at__week=datetime.date.today().isocalendar()[1],
         offline_sales=False,
         is_paid=True,
     )
@@ -309,7 +309,7 @@ def weekly_dashboard(request):
 
     best_seller_books = (
         OrderLineItem.objects.filter(
-            order__create_at__week=datetime.date.today().isocalendar()[1]
+            order__created_at__week=datetime.date.today().isocalendar()[1]
         )
         .values("product")
         .annotate(total=Sum("quantity"))
@@ -332,9 +332,9 @@ def weekly_dashboard(request):
         count_orders_day_in_week.append(
             Order.objects.filter(
                 is_paid=True,
-                create_at__day=day.day,
-                create_at__month=day.month,
-                create_at__year=day.year,
+                created_at__day=day.day,
+                created_at__month=day.month,
+                created_at__year=day.year,
             ).count()
         )
 
@@ -347,9 +347,9 @@ def weekly_dashboard(request):
     for day in weekdays:
         orders_day = Order.objects.filter(
             is_paid=True,
-            create_at__day=day.day,
-            create_at__month=day.month,
-            create_at__year=day.year,
+            created_at__day=day.day,
+            created_at__month=day.month,
+            created_at__year=day.year,
         )
         total_price_day = 0
         for order in orders_day:
@@ -417,14 +417,14 @@ def monthly_dashboard(request):
     # ======================== SHU OYNING BUYURTMALAR SONI ======================= #
 
     orders_month = Order.objects.filter(
-        is_paid=True, create_at__month=datetime.date.today().month
+        is_paid=True, created_at__month=datetime.date.today().month
     )
     count_orders_month = orders_month.count()
 
     # ======================= OTKAN OYNING BUYIRTMALAR SONI ====================== #
 
     last_month_orders = Order.objects.filter(
-        is_paid=True, create_at__month=datetime.date.today().month - 1
+        is_paid=True, created_at__month=datetime.date.today().month - 1
     )
     last_month_orders_count = last_month_orders.count()
 
@@ -457,7 +457,7 @@ def monthly_dashboard(request):
     # =================== OFFLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
     offline_orders_month = Order.objects.filter(
-        create_at__month=datetime.date.today().month, offline_sales=True
+        created_at__month=datetime.date.today().month, offline_sales=True
     )
     offline_count_orders_month = offline_orders_month.count()
     offline_total_price_month = 0
@@ -467,7 +467,7 @@ def monthly_dashboard(request):
     # ==================== ONLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
     online_orders_month = Order.objects.filter(
-        is_paid=True, create_at__month=datetime.date.today().month, offline_sales=False
+        is_paid=True, created_at__month=datetime.date.today().month, offline_sales=False
     )
     online_count_orders_month = online_orders_month.count()
     online_total_price_month = 0
@@ -477,7 +477,7 @@ def monthly_dashboard(request):
     # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
 
     best_seller_books = (
-        OrderLineItem.objects.filter(order__create_at__month=datetime.date.today().month)
+        OrderLineItem.objects.filter(order__created_at__month=datetime.date.today().month)
         .values("product")
         .annotate(total=Sum("quantity"))
         .order_by("-total")[:10]
@@ -497,7 +497,7 @@ def monthly_dashboard(request):
     for i in range(0, date.day):
         count_orders_day_in_month.append(
             Order.objects.filter(
-                is_paid=True, create_at__month=month.month, create_at__day=month.day + i
+                is_paid=True, created_at__month=month.month, created_at__day=month.day + i
             ).count()
         )
 
@@ -511,8 +511,8 @@ def monthly_dashboard(request):
     for day in range(start_day, today + 1):
         orders_day = Order.objects.filter(
             is_paid=True,
-            create_at__month=datetime.date.today().month,
-            create_at__day=day,
+            created_at__month=datetime.date.today().month,
+            created_at__day=day,
         )
         total_price_day = 0
         for order in orders_day:
@@ -563,7 +563,7 @@ def yearly_dashboard(request):
 
     # ======================= BUYURTMALAR SONI VA DAROMATI ======================= #
 
-    orders_year = Order.objects.filter(is_paid=True,create_at__year=datetime.date.today().year)
+    orders_year = Order.objects.filter(is_paid=True,created_at__year=datetime.date.today().year)
     count_orders_year = orders_year.count()
 
     total_price_year = 0
@@ -574,7 +574,7 @@ def yearly_dashboard(request):
     # =================== OFFLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
     offline_orders_year = Order.objects.filter(
-                                                create_at__year=datetime.date.today().year, 
+                                                created_at__year=datetime.date.today().year, 
                                                 offline_sales=True
                                                 )
     offline_count_orders_year = offline_orders_year.count()
@@ -587,7 +587,7 @@ def yearly_dashboard(request):
     # ==================== ONLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
     online_orders_year = Order.objects.filter(is_paid=True,
-                                              create_at__year=datetime.date.today().year, 
+                                              created_at__year=datetime.date.today().year, 
                                               offline_sales=False
                                               )
     online_count_orders_year = online_orders_year.count()
@@ -600,7 +600,7 @@ def yearly_dashboard(request):
 
 
     best_seller_books = OrderLineItem.objects.filter(
-                                                    order__create_at__year=datetime.date.today().year) \
+                                                    order__created_at__year=datetime.date.today().year) \
                                                     .values('product') \
                                                     .annotate(total=Sum('quantity')) \
                                                     .order_by('-total')[:10]
@@ -622,8 +622,8 @@ def yearly_dashboard(request):
     today_month = datetime.date.today().month
     for month in range(start_month, today_month+1):
         count_orders_month_in_year.append(Order.objects.filter(is_paid=True,
-                                                               create_at__month=month, 
-                                                               create_at__year=datetime.date.today().year
+                                                               created_at__month=month, 
+                                                               created_at__year=datetime.date.today().year
                                                                ).count())
 
 
@@ -636,8 +636,8 @@ def yearly_dashboard(request):
     today_month = datetime.date.today().month
     for month in range(start_month, today_month+1):
         orders_month = Order.objects.filter(is_paid=True,
-                                            create_at__year=datetime.date.today().year, 
-                                            create_at__month=month
+                                            created_at__year=datetime.date.today().year, 
+                                            created_at__month=month
                                             )
         total_price_month = 0
         for order in orders_month:
@@ -1129,9 +1129,9 @@ def order_list(request):
         if price_to:
             orders = orders.filter(total__lte=price_to)
         if created_date:
-            orders = orders.filter(create_at__icontains=created_date)
+            orders = orders.filter(created_at__icontains=created_date)
         if updated_date:
-            orders = orders.filter(update_at__icontains=updated_date)
+            orders = orders.filter(updated_at__icontains=updated_date)
 
     else:
         orders = Order.objects.filter(is_paid=True)
