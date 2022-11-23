@@ -136,3 +136,26 @@ class BookComment(BaseModel):
 
     def __str__(self):
         return self.book.title
+
+
+# ────────────────────────────── COLLECTION BOOK ───────────────────────────── #
+
+class CollectionBook(BaseModel):
+
+    STATUS = (
+        ("True", "Available"),
+        ("False", "Not Available"),
+    )
+
+    image = ProcessedImageField(
+        upload_to="images/",
+        processors=[ResizeToFill(370, 400)],
+        format="JPEG",
+        options={"quality": 100},
+        null=True,
+        blank=True,
+    )
+    url = models.CharField(max_length=555, blank=True)
+    status = models.CharField(max_length=15, choices=STATUS, default="True")
+
+

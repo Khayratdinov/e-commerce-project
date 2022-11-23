@@ -1602,7 +1602,6 @@ def random_image_edit(request, pk):
 
 # ============================================================================ #
 
-
 @seller_required
 def random_image_delete(request, pk):
     image = HeadImages.objects.get(pk=pk)
