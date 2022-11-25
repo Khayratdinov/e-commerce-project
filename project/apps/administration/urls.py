@@ -133,4 +133,12 @@ urlpatterns = [
         views.contact_message_delete,
         name="contact_message_delete",
     ),
+
+     # ============================= COLLECTION BOOKS ============================= #
+
+
+    path('collection_admin/', views.collection_book_admin, name='collection_book_admin'),
+    path('collection_create/', views.collection_book_create, name='collection_create'),
+    path('collection_edit/<int:pk>/', views.collection_edit, name='collection_edit'),
+    path('collection_delete/<int:pk>/', views.collection_delete, name='collection_delete'),
 ]

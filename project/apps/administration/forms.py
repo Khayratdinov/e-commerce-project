@@ -12,7 +12,7 @@ from django.forms import (
 from ckeditor.widgets import CKEditorWidget
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
+from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment, CollectionBook
 from project.apps.common.models import HomeSlider, HeadImages, CommonInfo
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
@@ -417,4 +417,21 @@ class CommonInfoForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter url"}
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+
+
+# ============================== COLLECTION BOOK ============================= #
+
+
+class CollectionBookForm(ModelForm):
+
+    class Meta:
+        model = CollectionBook
+        fields = ['image', 'url', 'status']
+        widgets = {
+            'image': FileInput(attrs={'class': 'form-control', 'placeholder': 'Images'}),
+            'url': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter price'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
         }

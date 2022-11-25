@@ -12,7 +12,14 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment
+from project.apps.book.models import (
+    Category, 
+    Book, 
+    BookSlider, 
+    Tag, 
+    BookComment, 
+    CollectionBook
+)
 from project.apps.common.models import (
     HomeSlider,
     HeadImages,
@@ -36,6 +43,7 @@ from project.apps.administration.forms import (
     CategoryBlogForm,
     RandomBradcaumpImgForm,
     CommonInfoForm,
+    CollectionBookForm
 )
 
 User = get_user_model()
@@ -1733,3 +1741,86 @@ def contact_message_delete(request, pk):
     contact_message.delete()
     messages.success(request, "Malumotlaringiz o'chirildi ")
     return redirect("contact_message_admin")
+
+
+
+
+# ============================================================================ #
+#                               COLLECTION BOOKS                               #
+# ============================================================================ #
+
+
+
+
+
+@seller_required
+def collection_book_admin(request):
+    collections = CollectionBook.objects.filter(status='True')
+
+
+    context = {
+        'collections': collections
+    }
+    return render(request, 'administration/collections/collections_admin.html', context)
+
+
+
+
+# ============================================================================ #
+
+
+
+@seller_required
+def collection_book_create(request):
+    if request.method == 'POST':
+        form = CollectionBookForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Malumotlar qoshildi")
+            return redirect('collection_book_admin')
+    else:
+        form = CollectionBookForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'administration/collections/collections_create.html', context)
+
+
+
+# ============================================================================ #
+
+
+
+@seller_required
+def collection_edit(request, pk):
+    collection = CollectionBook.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = CollectionBookForm(request.POST or None, request.FILES or None, instance=collection)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Malumotlar yangilandi")
+            return redirect('collection_book_admin')
+    else:
+        form = CollectionBookForm(instance=collection)
+    context = {
+        'form': form,
+        'collection': collection
+    }
+    return render(request, 'administration/collections/collections_edit.html', context)
+    
+
+
+
+# ============================================================================ #
+
+
+
+@seller_required
+def collection_delete(request, pk):
+    collection = CollectionBook.objects.filter(id=pk)
+    collection.delete()
+    messages.success(request, "Malumotlar o'chirildi")
+    return redirect('collection_book_admin')
+
+
+# ============================================================================ #
