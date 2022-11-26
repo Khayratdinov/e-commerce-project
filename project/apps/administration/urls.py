@@ -141,4 +141,12 @@ urlpatterns = [
     path('collection_create/', views.collection_book_create, name='collection_create'),
     path('collection_edit/<int:pk>/', views.collection_edit, name='collection_edit'),
     path('collection_delete/<int:pk>/', views.collection_delete, name='collection_delete'),
+
+
+    # ==================================== FAQ =================================== #
+
+    path('faq_admin/', views.faq_admin, name='faq_admin'),
+    path('faq_create/', views.faq_create, name='faq_create'),
+    path('faq_edit/<int:pk>/', views.faq_edit, name='faq_edit'),
+    path('faq_delete/<int:pk>/', views.faq_delete, name='faq_delete'),
 ]

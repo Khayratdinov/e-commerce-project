@@ -13,18 +13,19 @@ from django.contrib.auth import get_user_model
 
 # ============================================================================ #
 from project.apps.book.models import (
-    Category, 
-    Book, 
-    BookSlider, 
-    Tag, 
-    BookComment, 
-    CollectionBook
+    Category,
+    Book,
+    BookSlider,
+    Tag,
+    BookComment,
+    CollectionBook,
 )
 from project.apps.common.models import (
     HomeSlider,
     HeadImages,
     CommonInfo,
     ContactMessage,
+    FAQ,
 )
 from project.apps.order.models import Order, Shipping, OrderLineItem
 from project.apps.blog.models import CategoryBlog, Blog
@@ -43,7 +44,8 @@ from project.apps.administration.forms import (
     CategoryBlogForm,
     RandomBradcaumpImgForm,
     CommonInfoForm,
-    CollectionBookForm
+    CollectionBookForm,
+    FaqForm,
 )
 
 User = get_user_model()
@@ -103,7 +105,9 @@ def index(request):
     new_messages = ContactMessage.objects.filter(status="False")
     new_messages_count = new_messages.count()
 
-    today_comments = BookComment.objects.filter(created_at=datetime.date.today()).count()
+    today_comments = BookComment.objects.filter(
+        created_at=datetime.date.today()
+    ).count()
 
     today_orders = Order.objects.filter(is_paid=True, created_at=datetime.date.today())
     today_orders_count = today_orders.count()
@@ -391,12 +395,9 @@ def weekly_dashboard(request):
 # ============================================================================ #
 
 
-
-
 # ============================================================================ #
 #                               MONTHLY DASHBOARD                              #
 # ============================================================================ #
-
 
 
 @seller_required
@@ -485,7 +486,9 @@ def monthly_dashboard(request):
     # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
 
     best_seller_books = (
-        OrderLineItem.objects.filter(order__created_at__month=datetime.date.today().month)
+        OrderLineItem.objects.filter(
+            order__created_at__month=datetime.date.today().month
+        )
         .values("product")
         .annotate(total=Sum("quantity"))
         .order_by("-total")[:10]
@@ -505,7 +508,9 @@ def monthly_dashboard(request):
     for i in range(0, date.day):
         count_orders_day_in_month.append(
             Order.objects.filter(
-                is_paid=True, created_at__month=month.month, created_at__day=month.day + i
+                is_paid=True,
+                created_at__month=month.month,
+                created_at__day=month.day + i,
             ).count()
         )
 
@@ -550,131 +555,112 @@ def monthly_dashboard(request):
     return render(request, "administration/dashboard/monthly_dashboard.html", context)
 
 
-
-
-
-
 # ============================================================================ #
 #                               YEARLY DASHBOARD                               #
 # ============================================================================ #
 
+
 @seller_required
 def yearly_dashboard(request):
-
 
     # =========================== SHU YILNING MIJOZLARI ========================== #
 
     users_year = User.objects.filter(
-                                            date_joined__year=datetime.date.today().year
-                                            ).count()
+        date_joined__year=datetime.date.today().year
+    ).count()
     users_count = User.objects.all().count()
 
     # ======================= BUYURTMALAR SONI VA DAROMATI ======================= #
 
-    orders_year = Order.objects.filter(is_paid=True,created_at__year=datetime.date.today().year)
+    orders_year = Order.objects.filter(
+        is_paid=True, created_at__year=datetime.date.today().year
+    )
     count_orders_year = orders_year.count()
 
     total_price_year = 0
     for order in orders_year:
         total_price_year += order.total
 
-
     # =================== OFFLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
     offline_orders_year = Order.objects.filter(
-                                                created_at__year=datetime.date.today().year, 
-                                                offline_sales=True
-                                                )
+        created_at__year=datetime.date.today().year, offline_sales=True
+    )
     offline_count_orders_year = offline_orders_year.count()
     offline_total_price_year = 0
     for order in offline_orders_year:
         offline_total_price_year += order.total
-    
-
 
     # ==================== ONLINE BUYURTMALAR SONI VA DAROMATI =================== #
 
-    online_orders_year = Order.objects.filter(is_paid=True,
-                                              created_at__year=datetime.date.today().year, 
-                                              offline_sales=False
-                                              )
+    online_orders_year = Order.objects.filter(
+        is_paid=True, created_at__year=datetime.date.today().year, offline_sales=False
+    )
     online_count_orders_year = online_orders_year.count()
     online_total_price_year = 0
     for order in online_orders_year:
         online_total_price_year += order.total
 
-    
     # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
 
-
-    best_seller_books = OrderLineItem.objects.filter(
-                                                    order__created_at__year=datetime.date.today().year) \
-                                                    .values('product') \
-                                                    .annotate(total=Sum('quantity')) \
-                                                    .order_by('-total')[:10]
+    best_seller_books = (
+        OrderLineItem.objects.filter(order__created_at__year=datetime.date.today().year)
+        .values("product")
+        .annotate(total=Sum("quantity"))
+        .order_by("-total")[:10]
+    )
 
     best_seller_books_list = []
     for book in best_seller_books:
-        best_seller_books_list.append(Book.objects.get(id=book['product']))
+        best_seller_books_list.append(Book.objects.get(id=book["product"]))
 
-
-
-  # ============================= YEARLY STATISTICS ============================ #
-
+    # ============================= YEARLY STATISTICS ============================ #
 
     # ===================== SOTILGAN KITOBLAR SONI BOYICHA STATISTICA ============= #
-
 
     count_orders_month_in_year = []
     start_month = datetime.date.today().replace(month=1).month
     today_month = datetime.date.today().month
-    for month in range(start_month, today_month+1):
-        count_orders_month_in_year.append(Order.objects.filter(is_paid=True,
-                                                               created_at__month=month, 
-                                                               created_at__year=datetime.date.today().year
-                                                               ).count())
-
+    for month in range(start_month, today_month + 1):
+        count_orders_month_in_year.append(
+            Order.objects.filter(
+                is_paid=True,
+                created_at__month=month,
+                created_at__year=datetime.date.today().year,
+            ).count()
+        )
 
     # ======================== DAROMAT BOYICHA STATISTICA ======================== #
-
-
 
     total_price_month_in_year = []
     start_month = datetime.date.today().replace(month=1).month
     today_month = datetime.date.today().month
-    for month in range(start_month, today_month+1):
-        orders_month = Order.objects.filter(is_paid=True,
-                                            created_at__year=datetime.date.today().year, 
-                                            created_at__month=month
-                                            )
+    for month in range(start_month, today_month + 1):
+        orders_month = Order.objects.filter(
+            is_paid=True,
+            created_at__year=datetime.date.today().year,
+            created_at__month=month,
+        )
         total_price_month = 0
         for order in orders_month:
             total_price_month += order.total
         total_price_month_in_year.append(total_price_month)
 
-
-
     context = {
-
-        'total_price_year': total_price_year,
-        'count_orders_year': count_orders_year,
-
-        'offline_count_orders_year': offline_count_orders_year,
-        'offline_total_price_year': offline_total_price_year,
-
-        'online_count_orders_year': online_count_orders_year,
-        'online_total_price_year': online_total_price_year,
-
-        'best_seller_books_list': best_seller_books_list,
-        'users_year': users_year,
-        'users_count': users_count,
-        'orders_year': orders_year,
-
-        'count_orders_month_in_year': count_orders_month_in_year,
-        'total_price_month_in_year': total_price_month_in_year,
-
+        "total_price_year": total_price_year,
+        "count_orders_year": count_orders_year,
+        "offline_count_orders_year": offline_count_orders_year,
+        "offline_total_price_year": offline_total_price_year,
+        "online_count_orders_year": online_count_orders_year,
+        "online_total_price_year": online_total_price_year,
+        "best_seller_books_list": best_seller_books_list,
+        "users_year": users_year,
+        "users_count": users_count,
+        "orders_year": orders_year,
+        "count_orders_month_in_year": count_orders_month_in_year,
+        "total_price_month_in_year": total_price_month_in_year,
     }
-    return render(request, 'administration/dashboard/yearly_dashboard.html', context)
+    return render(request, "administration/dashboard/yearly_dashboard.html", context)
 
 
 # ============================================================================ #
@@ -1610,6 +1596,7 @@ def random_image_edit(request, pk):
 
 # ============================================================================ #
 
+
 @seller_required
 def random_image_delete(request, pk):
     image = HeadImages.objects.get(pk=pk)
@@ -1743,76 +1730,59 @@ def contact_message_delete(request, pk):
     return redirect("contact_message_admin")
 
 
-
-
 # ============================================================================ #
 #                               COLLECTION BOOKS                               #
 # ============================================================================ #
 
 
-
-
-
 @seller_required
 def collection_book_admin(request):
-    collections = CollectionBook.objects.filter(status='True')
+    collections = CollectionBook.objects.filter(status="True")
 
-
-    context = {
-        'collections': collections
-    }
-    return render(request, 'administration/collections/collections_admin.html', context)
-
-
+    context = {"collections": collections}
+    return render(request, "administration/collections/collections_admin.html", context)
 
 
 # ============================================================================ #
-
 
 
 @seller_required
 def collection_book_create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CollectionBookForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             form.save()
             messages.success(request, "Malumotlar qoshildi")
-            return redirect('collection_book_admin')
+            return redirect("collection_book_admin")
     else:
         form = CollectionBookForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'administration/collections/collections_create.html', context)
-
+    context = {"form": form}
+    return render(
+        request, "administration/collections/collections_create.html", context
+    )
 
 
 # ============================================================================ #
-
 
 
 @seller_required
 def collection_edit(request, pk):
     collection = CollectionBook.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = CollectionBookForm(request.POST or None, request.FILES or None, instance=collection)
+    if request.method == "POST":
+        form = CollectionBookForm(
+            request.POST or None, request.FILES or None, instance=collection
+        )
         if form.is_valid():
             form.save()
             messages.success(request, "Malumotlar yangilandi")
-            return redirect('collection_book_admin')
+            return redirect("collection_book_admin")
     else:
         form = CollectionBookForm(instance=collection)
-    context = {
-        'form': form,
-        'collection': collection
-    }
-    return render(request, 'administration/collections/collections_edit.html', context)
-    
-
+    context = {"form": form, "collection": collection}
+    return render(request, "administration/collections/collections_edit.html", context)
 
 
 # ============================================================================ #
-
 
 
 @seller_required
@@ -1820,7 +1790,66 @@ def collection_delete(request, pk):
     collection = CollectionBook.objects.filter(id=pk)
     collection.delete()
     messages.success(request, "Malumotlar o'chirildi")
-    return redirect('collection_book_admin')
+    return redirect("collection_book_admin")
 
 
 # ============================================================================ #
+
+
+# ============================================================================ #
+#                                      FAQ                                     #
+# ============================================================================ #
+
+
+@seller_required
+def faq_admin(request):
+    faqs = FAQ.objects.all()
+
+    context = {"faqs": faqs}
+    return render(request, "administration/faq/faq_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def faq_create(request):
+    if request.method == "POST":
+        form = FaqForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Savollar qoshildi")
+            return redirect("faq_admin")
+    else:
+        form = FaqForm()
+    context = {"form": form}
+    return render(request, "administration/faq/faq_create.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def faq_edit(request, pk):
+    faq = FAQ.objects.get(pk=pk)
+    if request.method == "POST":
+        form = FaqForm(request.POST, instance=faq)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Savollar yangilandi")
+            return redirect("faq_admin")
+    else:
+        form = FaqForm(instance=faq)
+    context = {"form": form, "faq": faq}
+    return render(request, "administration/faq/faq_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def faq_delete(request, pk):
+    faq = FAQ.objects.get(pk=pk)
+    faq.delete()
+    messages.success(request, "Savollar o'chirildi")
+    return redirect("faq_admin")

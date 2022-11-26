@@ -12,8 +12,15 @@ from django.forms import (
 from ckeditor.widgets import CKEditorWidget
 
 # ============================================================================ #
-from project.apps.book.models import Category, Book, BookSlider, Tag, BookComment, CollectionBook
-from project.apps.common.models import HomeSlider, HeadImages, CommonInfo
+from project.apps.book.models import (
+    Category,
+    Book,
+    BookSlider,
+    Tag,
+    BookComment,
+    CollectionBook,
+)
+from project.apps.common.models import HomeSlider, HeadImages, CommonInfo, FAQ
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
 from project.apps.blog.models import CategoryBlog, Blog
@@ -420,18 +427,38 @@ class CommonInfoForm(ModelForm):
         }
 
 
-
-
 # ============================== COLLECTION BOOK ============================= #
 
 
 class CollectionBookForm(ModelForm):
-
     class Meta:
         model = CollectionBook
-        fields = ['image', 'url', 'status']
+        fields = ["image", "url", "status"]
         widgets = {
-            'image': FileInput(attrs={'class': 'form-control', 'placeholder': 'Images'}),
-            'url': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter price'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
+            "image": FileInput(
+                attrs={"class": "form-control", "placeholder": "Images"}
+            ),
+            "url": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter price"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ==================================== FAQ =================================== #
+
+
+class FaqForm(ModelForm):
+    class Meta:
+        model = FAQ
+        fields = ["question", "answer", "status"]
+
+        widgets = {
+            "question": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter question"}
+            ),
+            "answer": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter answer"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
         }
