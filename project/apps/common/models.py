@@ -19,16 +19,21 @@ class BaseModel(models.Model):
         abstract = True
 
 
+
+# ========================== BASE MODEL WITH STATUS ========================== #
+
+class BaseModelWithStatus(BaseModel):
+    STATUS = (
+        ("True", "Mavjud"),
+        ("False", "Mavjud emas"),
+    )
+
+    status = models.CharField(max_length=15, choices=STATUS, default="False")
+
 # ======================== COMMON INFORMATION WEBSITE ======================== #
 
 
-class CommonInfo(BaseModel):
-
-    STATUS = (
-        ("True", "True"),
-        ("False", "False"),
-    )
-
+class CommonInfo(BaseModelWithStatus):
     logo = models.ImageField(blank=True, upload_to="images/")
 
     description_contact = models.TextField(blank=True)
@@ -41,26 +46,16 @@ class CommonInfo(BaseModel):
     telegram = models.CharField(max_length=255, blank=True)
     instagram = models.CharField(max_length=255, blank=True)
     facebook = models.CharField(max_length=255, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS, default="False")
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
 
 
 # ================================ HOMESLIDER ================================ #
 
 
-class HomeSlider(BaseModel):
-
-    STATUS = (
-        ("True", "Published"),
-        ("False", "Not Published"),
-    )
-
+class HomeSlider(BaseModelWithStatus):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     shape = models.ImageField(blank=True, upload_to="images/")
     cover = models.ImageField(blank=True, upload_to="images/")
-    status = models.CharField(max_length=15, choices=STATUS, default="True")
     url = models.CharField(max_length=555, blank=True)
 
     def __str__(self):
@@ -70,13 +65,7 @@ class HomeSlider(BaseModel):
 # =============================== HEADER IMAGES ============================== #
 
 
-class HeadImages(BaseModel):
-
-    STATUS = (
-        ("True", "Available"),
-        ("False", "Not Available"),
-    )
-
+class HeadImages(BaseModelWithStatus):
     image = ProcessedImageField(
         upload_to="images/",
         processors=[ResizeToFill(1920, 1285)],
@@ -85,13 +74,12 @@ class HeadImages(BaseModel):
         null=True,
         blank=True,
     )
-    status = models.CharField(max_length=15, choices=STATUS, default="True")
 
 
 # ============================== CONTACTMESSAGE ============================== #
 
 
-class ContactMessage(models.Model):
+class ContactMessage(BaseModel):
 
     STATUS = (
         ("True", "Oqilgan"),
@@ -104,7 +92,6 @@ class ContactMessage(models.Model):
     message = models.TextField(max_length=500)
     ip = models.CharField(max_length=155, blank=True)
     status = models.CharField(max_length=10, choices=STATUS, default="False")
-    create_at = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False, editable=False)
 
     class Meta:
@@ -112,3 +99,13 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class FAQ(BaseModelWithStatus):
+    question = models.CharField(max_length=200)
+    answer = models.TextField(blank=True)
+
+
+    def __str__(self):
+        return self.question
