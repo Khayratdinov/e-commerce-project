@@ -1,3 +1,7 @@
+import slugify
+
+# ============================================================================ #
+
 from django.db import models
 from django.urls import reverse
 
@@ -42,6 +46,10 @@ class Blog(BaseModel):
     def get_absolute_url(self):
         return reverse("blog_detail", kwargs={"slug": self.slug})
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)[:50]
+        super(Blog, self).save(*args, **kwargs)
+
 
 # ============================================================================ #
 
@@ -55,6 +63,10 @@ class CategoryBlog(BaseModel):
 
     def get_absolute_url(self):
         return reverse("category_blog_detail", kwargs={"slug": self.slug})
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)[:50]
+        super(Blog, self).save(*args, **kwargs)
 
 
 # ============================================================================ #
