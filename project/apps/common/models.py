@@ -19,16 +19,22 @@ class BaseModel(models.Model):
         abstract = True
 
 
-
 # ========================== BASE MODEL WITH STATUS ========================== #
 
-class BaseModelWithStatus(BaseModel):
+
+class BaseModelWithStatus(models.Model):
     STATUS = (
         ("True", "Mavjud"),
         ("False", "Mavjud emas"),
     )
 
     status = models.CharField(max_length=15, choices=STATUS, default="False")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 
 # ======================== COMMON INFORMATION WEBSITE ======================== #
 
@@ -95,17 +101,15 @@ class ContactMessage(BaseModel):
     read = models.BooleanField(default=False, editable=False)
 
     class Meta:
-        ordering = ["-create_at"]
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
 
 
-
 class FAQ(BaseModelWithStatus):
     question = models.CharField(max_length=200)
     answer = models.TextField(blank=True)
-
 
     def __str__(self):
         return self.question
