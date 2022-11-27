@@ -1,4 +1,5 @@
 import math
+import slugify
 
 # ============================================================================ #
 
@@ -31,6 +32,10 @@ class Category(BaseModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)
+        super(Category, self).save(*args, **kwargs)
+
 
 # ==================================== TAG =================================== #
 
@@ -41,6 +46,10 @@ class Tag(BaseModel):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)
+        super(Tag, self).save(*args, **kwargs)
 
 
 # =================================== BOOK =================================== #
@@ -101,6 +110,10 @@ class Book(BaseModel):
             cnt = int(reviews["count"])
         return cnt
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)
+        super(Book, self).save(*args, **kwargs)
+
 
 # ================================ BOOK SLIDER =============================== #
 
@@ -140,6 +153,7 @@ class BookComment(BaseModel):
 
 # ────────────────────────────── COLLECTION BOOK ───────────────────────────── #
 
+
 class CollectionBook(BaseModel):
 
     STATUS = (
@@ -157,5 +171,3 @@ class CollectionBook(BaseModel):
     )
     url = models.CharField(max_length=555, blank=True)
     status = models.CharField(max_length=15, choices=STATUS, default="True")
-
-
