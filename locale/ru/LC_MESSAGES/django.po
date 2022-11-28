@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-28 14:28+0500\n"
+"POT-Creation-Date: 2022-11-29 00:49+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,6 +68,63 @@ msgstr "Блог"
 msgid "Contact"
 msgstr "Контакт"
 
+#: project/templates/book/book_list.html:19
+#: project/templates/book/book_list.html:24
+#, fuzzy
+#| msgid "Yangi Kitobalar"
+msgid "Kitoblar"
+msgstr "Новые книги"
+
+#: project/templates/book/book_list.html:22
+msgid "Bosh sahifa"
+msgstr "Домашняя страница"
+
+#: project/templates/book/book_list.html:69
+msgid "Odatiy"
+msgstr "Обычный"
+
+#: project/templates/book/book_list.html:70
+msgid "Nomi (А - Ya)"
+msgstr "Имя (А - Я)"
+
+#: project/templates/book/book_list.html:71
+msgid "Nomi (Ya - А)"
+msgstr "Имя (Я - А)"
+
+#: project/templates/book/book_list.html:72
+msgid "Narxi (Аrzondan > Qimmatgacha)"
+msgstr "Цена (Дешево > Дорого)"
+
+#: project/templates/book/book_list.html:73
+msgid "Narxi (Qimmatdan > Аrzongacha)"
+msgstr "Цена (От Дорого > Дешево)"
+
+#: project/templates/book/book_list.html:74
+msgid "Berilgan baxosi (Eng yuqorisi)"
+msgstr "Рейтинг (самый высокий)"
+
+#: project/templates/book/book_list.html:75
+msgid "Berilgan baxosi (Eng past)"
+msgstr "Цитата (самая низкая)"
+
+#: project/templates/book/book_list.html:76
+msgid "Kiritilgan sanasi (Eski > yangi)"
+msgstr "Дата добавления (Старый > Новый)"
+
+#: project/templates/book/book_list.html:77
+msgid "Kiritilgan sanasi (Yangi > eski)"
+msgstr "Дата добавления (новый > старый)"
+
+#: project/templates/book/book_list.html:114 project/templates/index.html:144
+#: project/templates/index.html:238
+msgid "CHEGIRMA"
+msgstr "СКИДКА"
+
+#: project/templates/book/book_list.html:116 project/templates/index.html:146
+#: project/templates/index.html:240
+msgid "YANGI"
+msgstr "НОВЫЙ"
+
 #: project/templates/index.html:32
 msgid "Batafsil korish"
 msgstr "Узнать больше"
@@ -79,14 +136,6 @@ msgstr "Новые книги"
 #: project/templates/index.html:120
 msgid "Sizning kitob javoningiz ushin yangi kitoblar"
 msgstr "Новые книги на вашей книжной полке"
-
-#: project/templates/index.html:144 project/templates/index.html:238
-msgid "CHEGIRMA"
-msgstr "СКИДКА"
-
-#: project/templates/index.html:146 project/templates/index.html:240
-msgid "YANGI"
-msgstr "НОВЫЙ"
 
 #: project/templates/index.html:210
 msgid "Kop sotiliyotkan kitoblar"
@@ -122,5 +171,7 @@ msgid "Buyurtma uchun chegirmalar"
 msgstr "Скидки на заказы"
 
 #: project/templates/index.html:406
-msgid " Onlayn Yordam"
+#, fuzzy
+#| msgid " Onlayn Yordam"
+msgid "24 x 7 Onlayn Yordam"
 msgstr "24 x 7 онлайн-поддержка"

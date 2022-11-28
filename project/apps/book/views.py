@@ -18,9 +18,9 @@ from project.apps.book.forms import BookCommentForm
 
 
 def book_list(request):
-    books = Book.objects.all()
+    book_list = Book.objects.all()
 
-    context = {"books": books}
+    context = {"book_list": book_list}
     return render(request, "book/book_list.html", context)
 
 

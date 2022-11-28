@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-28 14:28+0500\n"
+"POT-Creation-Date: 2022-11-29 00:49+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,6 +66,61 @@ msgstr "Blog"
 msgid "Contact"
 msgstr "Aloqa"
 
+#: project/templates/book/book_list.html:19
+#: project/templates/book/book_list.html:24
+msgid "Kitoblar"
+msgstr ""
+
+#: project/templates/book/book_list.html:22
+msgid "Bosh sahifa"
+msgstr ""
+
+#: project/templates/book/book_list.html:69
+msgid "Odatiy"
+msgstr ""
+
+#: project/templates/book/book_list.html:70
+msgid "Nomi (А - Ya)"
+msgstr ""
+
+#: project/templates/book/book_list.html:71
+msgid "Nomi (Ya - А)"
+msgstr ""
+
+#: project/templates/book/book_list.html:72
+msgid "Narxi (Аrzondan > Qimmatgacha)"
+msgstr ""
+
+#: project/templates/book/book_list.html:73
+msgid "Narxi (Qimmatdan > Аrzongacha)"
+msgstr ""
+
+#: project/templates/book/book_list.html:74
+msgid "Berilgan baxosi (Eng yuqorisi)"
+msgstr ""
+
+#: project/templates/book/book_list.html:75
+msgid "Berilgan baxosi (Eng past)"
+msgstr ""
+
+#: project/templates/book/book_list.html:76
+msgid "Kiritilgan sanasi (Eski > yangi)"
+msgstr ""
+
+#: project/templates/book/book_list.html:77
+msgid "Kiritilgan sanasi (Yangi > eski)"
+msgstr ""
+
+#: project/templates/book/book_list.html:114 project/templates/index.html:144
+#: project/templates/index.html:238
+msgid "CHEGIRMA"
+msgstr ""
+
+#: project/templates/book/book_list.html:116 project/templates/index.html:146
+#: project/templates/index.html:240
+msgid "YANGI"
+msgstr ""
+
 #: project/templates/index.html:32
 msgid "Batafsil korish"
 msgstr ""
@@ -76,14 +131,6 @@ msgstr ""
 
 #: project/templates/index.html:120
 msgid "Sizning kitob javoningiz ushin yangi kitoblar"
-msgstr ""
-
-#: project/templates/index.html:144 project/templates/index.html:238
-msgid "CHEGIRMA"
-msgstr ""
-
-#: project/templates/index.html:146 project/templates/index.html:240
-msgid "YANGI"
 msgstr ""
 
 #: project/templates/index.html:210
