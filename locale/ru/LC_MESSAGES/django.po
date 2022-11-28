@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-26 12:57+0500\n"
+"POT-Creation-Date: 2022-11-28 14:28+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,19 +16,27 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: project/settings/base.py:118
+#: project/apps/common/views.py:65
+msgid "Sizning xabaringiz yuborildi! Rahmat"
+msgstr ""
+
+#: project/apps/common/views.py:68
+msgid "Xatolik yuz berdi iltimos qayta urinip koring"
+msgstr ""
+
+#: project/settings/base.py:119
 msgid "English"
 msgstr "Английский"
 
-#: project/settings/base.py:119
+#: project/settings/base.py:120
 msgid "Russian"
 msgstr "Русский"
 
-#: project/settings/base.py:120
+#: project/settings/base.py:121
 msgid "Uzbek"
 msgstr "узбекский"
 
@@ -59,3 +67,60 @@ msgstr "Блог"
 #: project/templates/base.html:187 project/templates/base.html:448
 msgid "Contact"
 msgstr "Контакт"
+
+#: project/templates/index.html:32
+msgid "Batafsil korish"
+msgstr "Узнать больше"
+
+#: project/templates/index.html:118
+msgid "Yangi Kitobalar"
+msgstr "Новые книги"
+
+#: project/templates/index.html:120
+msgid "Sizning kitob javoningiz ushin yangi kitoblar"
+msgstr "Новые книги на вашей книжной полке"
+
+#: project/templates/index.html:144 project/templates/index.html:238
+msgid "CHEGIRMA"
+msgstr "СКИДКА"
+
+#: project/templates/index.html:146 project/templates/index.html:240
+msgid "YANGI"
+msgstr "НОВЫЙ"
+
+#: project/templates/index.html:210
+msgid "Kop sotiliyotkan kitoblar"
+msgstr "Самые продаваемые книги"
+
+#: project/templates/index.html:212
+msgid ""
+"Bizda eng kop sotiliyotkan kitoblar royxati oylaymizki sizga ham maqul keladi"
+msgstr "У нас есть список бестселлеров, которые могут вам понравиться"
+
+#: project/templates/index.html:318
+msgid "Yangiliklar"
+msgstr "Новости"
+
+#: project/templates/index.html:320
+msgid "Biz haqqimizdagi yangiliklar bizni kuzatip boring"
+msgstr "Следите за новостями о нас"
+
+#: project/templates/index.html:342
+msgid "Toliq oqish"
+msgstr "Читать далее"
+
+#: project/templates/index.html:370
+msgid "Uyga bepul yetkazib berish"
+msgstr "Бесплатная доставка на дом"
+
+#: project/templates/index.html:382
+msgid "Xavfsiz to'lov"
+msgstr "Безопасная оплата"
+
+#: project/templates/index.html:394
+msgid "Buyurtma uchun chegirmalar"
+msgstr "Скидки на заказы"
+
+#: project/templates/index.html:406
+msgid " Onlayn Yordam"
+msgstr "24 x 7 онлайн-поддержка"
