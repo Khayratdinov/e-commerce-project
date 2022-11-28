@@ -4,3 +4,5 @@ pillow
 django-ckeditor
 django-imagekit
 django-modeltranslation
+
+python-slugify

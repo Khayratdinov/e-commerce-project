@@ -689,6 +689,8 @@ def category_admin(request):
 @admin_required
 def category_create(request):
 
+    print("HELOO", request.POST)
+
     form = CategoryForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():

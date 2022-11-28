@@ -1,5 +1,5 @@
 import math
-import slugify
+
 
 # ============================================================================ #
 
@@ -12,6 +12,7 @@ from django.db.models import Avg, Count
 from ckeditor_uploader.fields import RichTextUploadingField
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from slugify import slugify
 
 # ============================================================================ #
 from project.apps.common.models import BaseModel
