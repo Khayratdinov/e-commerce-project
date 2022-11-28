@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.db.models import Sum
 
 # ============================================================================ #
 from project.apps.common.models import (
@@ -9,18 +10,38 @@ from project.apps.common.models import (
     ContactMessage,
     CommonInfo,
     HeadImages,
+    FAQ,
 )
 from project.apps.common.forms import ContactMessageForm
+from project.apps.book.models import Book
+from project.apps.order.models import OrderLineItem
+from project.apps.blog.models import Blog
 
 
 # Create your views here.
 
 
 def index(request):
+    books = Book.objects.all()
     home_sliders = HomeSlider.objects.all()[:3]
+
+    best_seller_books = (
+        OrderLineItem.objects.filter()
+        .values("product")
+        .annotate(total_sales=Sum("quantity"))
+        .order_by("-total_sales")[:8]
+    )
+
+    blog_posts = Blog.objects.filter(status="True")[:3]
+
+    faqs = FAQ.objects.all()[:5]
 
     context = {
         "home_sliders": home_sliders,
+        "books": books,
+        "best_seller_books": best_seller_books,
+        "blog_posts": blog_posts,
+        "faqs": faqs,
     }
 
     return render(request, "index.html", context)
