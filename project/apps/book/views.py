@@ -1,7 +1,7 @@
 import math
 
 # ============================================================================ #
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -34,19 +34,19 @@ def book_detail(request, slug):
 
 
 def book_list_by_category(request, slug):
-    category = Category.objects.filter(slug=slug)
+    category = get_object_or_404(Category, slug=slug)
     books = Book.objects.filter(category=category)
 
     context = {"category": category, "books": books}
-    return render(request, "book/book_detail.html", context)
+    return render(request, "book/book_list_by_category.html", context)
 
 
 def book_list_by_tag(request, slug):
-    tag = Tag.objects.filter(slug=slug)
+    tag = get_object_or_404(Tag, slug=slug)
     books = Book.objects.filter(tags=tag)
 
     context = {"tag": tag, "books": books}
-    return render(request, "book/book_detail.html", context)
+    return render(request, "book/book_list_by_tag.html", context)
 
 
 def add_comment(request, book_id):
