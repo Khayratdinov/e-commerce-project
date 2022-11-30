@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 00:49+0500\n"
+"POT-Creation-Date: 2022-11-29 01:39+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,29 +44,121 @@ msgstr "узбекский"
 msgid "HamrohBooks - Kitoblar olami"
 msgstr "HamrohBooks - Мир Книг"
 
-#: project/templates/base.html:63
+#: project/templates/base.html:64
 msgid "Sayt test rejimda ishlayapti"
 msgstr "Сайт находится в тестовом режиме"
 
-#: project/templates/base.html:166 project/templates/base.html:433
+#: project/templates/base.html:167 project/templates/base.html:434
 msgid "Home"
 msgstr "Главный"
 
-#: project/templates/base.html:168 project/templates/base.html:434
+#: project/templates/base.html:169 project/templates/base.html:435
 msgid "Books"
 msgstr "Книги"
 
-#: project/templates/base.html:169 project/templates/base.html:436
+#: project/templates/base.html:170 project/templates/base.html:437
+#: project/templates/book/book_detail.html:133
 msgid "Category"
 msgstr "Категория"
 
-#: project/templates/base.html:184 project/templates/base.html:447
+#: project/templates/base.html:185 project/templates/base.html:448
 msgid "Blog"
 msgstr "Блог"
 
-#: project/templates/base.html:187 project/templates/base.html:448
+#: project/templates/base.html:188 project/templates/base.html:449
 msgid "Contact"
 msgstr "Контакт"
+
+#: project/templates/book/book_detail.html:22
+#: project/templates/book/book_list.html:22
+msgid "Bosh sahifa"
+msgstr "Домашняя страница"
+
+#: project/templates/book/book_detail.html:96
+#: project/templates/book/book_detail.html:175
+msgid "Izohlar"
+msgstr "Комментарии"
+
+#: project/templates/book/book_detail.html:112
+msgid "Savatchaga qo'shish"
+msgstr "Добавить в корзину"
+
+#: project/templates/book/book_detail.html:113
+msgid "Sotip olish"
+msgstr "Купить"
+
+#: project/templates/book/book_detail.html:120
+msgid "Kitobni saqlap korish"
+msgstr "Сохранить книгу"
+
+#: project/templates/book/book_detail.html:125
+msgid "Ro'yxatdan o'tish"
+msgstr "регистрироваться"
+
+#: project/templates/book/book_detail.html:171
+msgid "Kitob haqida malumot"
+msgstr "О книге"
+
+#: project/templates/book/book_detail.html:185
+msgid "Tags"
+msgstr "Tags"
+
+#: project/templates/book/book_detail.html:198
+msgid "Mijozlarning izohlari"
+msgstr "Комментарии клиентов"
+
+#: project/templates/book/book_detail.html:208
+msgid "izoh"
+msgstr "Комментарии"
+
+#: project/templates/book/book_detail.html:209
+#: project/templates/book/book_detail.html:216
+msgid "Izoh yozish"
+msgstr "Написать комментарий"
+
+#: project/templates/book/book_detail.html:225
+msgid "Enter your name"
+msgstr "Enter your name"
+
+#: project/templates/book/book_detail.html:231
+msgid "john.smith@example.com"
+msgstr "test@example.com"
+
+#: project/templates/book/book_detail.html:236
+msgid "Baholash"
+msgstr "Оценка"
+
+#: project/templates/book/book_detail.html:262
+msgid "Fikrlaringizni shu yerda yozing"
+msgstr "Пишите сюда свои мысли"
+
+#: project/templates/book/book_detail.html:267
+msgid "Fikr qoldirish"
+msgstr "Оставить комментарий"
+
+#: project/templates/book/book_detail.html:274
+msgid "rating qoldirish ushin royxattan otishingiz kerak"
+msgstr "Вы должны зарегистрироваться, чтобы оставить рейтинг"
+
+#: project/templates/book/book_detail.html:315
+msgid "Oqshash kitoblar"
+msgstr "Похожие книги"
+
+#: project/templates/book/book_detail.html:317
+msgid "Bu kitoblar ham sizga yoqishi mumkin"
+msgstr "Вам также могут понравиться эти книги"
+
+#: project/templates/book/book_detail.html:346
+#: project/templates/book/book_list.html:114 project/templates/index.html:144
+#: project/templates/index.html:238
+msgid "CHEGIRMA"
+msgstr "СКИДКА"
+
+#: project/templates/book/book_detail.html:348
+#: project/templates/book/book_list.html:116 project/templates/index.html:146
+#: project/templates/index.html:240
+msgid "YANGI"
+msgstr "НОВЫЙ"
 
 #: project/templates/book/book_list.html:19
 #: project/templates/book/book_list.html:24
@@ -74,10 +166,6 @@ msgstr "Контакт"
 #| msgid "Yangi Kitobalar"
 msgid "Kitoblar"
 msgstr "Новые книги"
-
-#: project/templates/book/book_list.html:22
-msgid "Bosh sahifa"
-msgstr "Домашняя страница"
 
 #: project/templates/book/book_list.html:69
 msgid "Odatiy"
@@ -114,16 +202,6 @@ msgstr "Дата добавления (Старый > Новый)"
 #: project/templates/book/book_list.html:77
 msgid "Kiritilgan sanasi (Yangi > eski)"
 msgstr "Дата добавления (новый > старый)"
-
-#: project/templates/book/book_list.html:114 project/templates/index.html:144
-#: project/templates/index.html:238
-msgid "CHEGIRMA"
-msgstr "СКИДКА"
-
-#: project/templates/book/book_list.html:116 project/templates/index.html:146
-#: project/templates/index.html:240
-msgid "YANGI"
-msgstr "НОВЫЙ"
 
 #: project/templates/index.html:32
 msgid "Batafsil korish"
