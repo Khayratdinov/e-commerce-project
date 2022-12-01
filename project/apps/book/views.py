@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 # ============================================================================ #
 from project.apps.book.models import Category, Tag, Book, BookSlider, BookComment
 from project.apps.book.forms import BookCommentForm
+from project.apps.common.models import HeadImages
 
 
 # ============================================================================ #
@@ -19,16 +20,18 @@ from project.apps.book.forms import BookCommentForm
 
 def book_list(request):
     book_list = Book.objects.all()
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    context = {"book_list": book_list}
+    context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list.html", context)
 
 
 def book_detail(request, slug):
-    book = Book.objects.get(slug=slug)
+    book = get_object_or_404(Book, slug=slug)
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
     book_slider = BookSlider.objects.filter(book=book)
 
-    context = {"book": book, "book_slider": book_slider}
+    context = {"book": book, "book_slider": book_slider, "bradcaump_img": bradcaump_img}
 
     return render(request, "book/book_detail.html", context)
 
@@ -36,16 +39,18 @@ def book_detail(request, slug):
 def book_list_by_category(request, slug):
     category = get_object_or_404(Category, slug=slug)
     books = Book.objects.filter(category=category)
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    context = {"category": category, "books": books}
+    context = {"category": category, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_category.html", context)
 
 
 def book_list_by_tag(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
     books = Book.objects.filter(tags=tag)
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    context = {"tag": tag, "books": books}
+    context = {"tag": tag, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_tag.html", context)
 
 
