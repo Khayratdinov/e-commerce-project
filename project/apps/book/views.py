@@ -19,7 +19,30 @@ from project.apps.common.models import HeadImages
 
 
 def book_list(request):
-    book_list = Book.objects.all()
+    if request.method == "POST":
+        select = request.POST.get("sort")
+
+        if select == "name_A_Z":
+            book_list = Book.objects.filter(status="True").order_by("title")
+        elif select == "name_Z_A":
+            book_list = Book.objects.filter(status="True").order_by("-title")
+        elif select == "price_low_to_high":
+            book_list = Book.objects.filter(status="True").order_by("price")
+        elif select == "price_high_to_low":
+            book_list = Book.objects.filter(status="True").order_by("-price")
+        elif select == "rating_highest":
+            book_list = Book.objects.filter(status="True").order_by("-rating")
+        elif select == "rating_lowest":
+            book_list = Book.objects.filter(status="True").order_by("rating")
+        elif select == "added_date_old_new":
+            book_list = Book.objects.filter(status="True").order_by("-id")
+        elif select == "added_date_new_old":
+            book_list = Book.objects.filter(status="True").order_by("id")
+        else:
+            book_list = Book.objects.filter(status="True")
+    else:
+
+        book_list = Book.objects.filter(status="True")
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
