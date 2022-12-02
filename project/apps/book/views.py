@@ -6,6 +6,7 @@ from django.db.models import Avg
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.translation import gettext as _
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # ============================================================================ #
 from project.apps.book.models import Category, Tag, Book, BookSlider, BookComment
@@ -64,6 +65,15 @@ def book_list_by_category(request, slug):
     books = Book.objects.filter(category=category)
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
+    paginator = Paginator(books, 10)
+    page = request.GET.get("page")
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+
     context = {"category": category, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_category.html", context)
 
@@ -72,6 +82,15 @@ def book_list_by_tag(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
     books = Book.objects.filter(tags=tag)
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
+
+    paginator = Paginator(books, 10)
+    page = request.GET.get("page")
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
 
     context = {"tag": tag, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_tag.html", context)
