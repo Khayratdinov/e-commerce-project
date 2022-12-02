@@ -52,10 +52,28 @@ def book_list(request):
 
 def book_detail(request, slug):
     book = get_object_or_404(Book, slug=slug)
+
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
     book_slider = BookSlider.objects.filter(book=book)
 
-    context = {"book": book, "book_slider": book_slider, "bradcaump_img": bradcaump_img}
+    comments = BookComment.objects.filter(book=book)
+
+    category_list = Category.objects.filter(book=book)
+    books_by_category = Book.objects.filter(category__in=category_list, status="True")
+    tags = Tag.objects.filter(book=book)
+
+    random_books = Book.objects.filter(status="True").order_by("?")[:4]
+
+    context = {
+        "book": book,
+        "bradcaump_img": bradcaump_img,
+        "book_slider": book_slider,
+        "comments": comments,
+        "category_list": category_list,
+        "books_by_category": books_by_category,
+        "tags": tags,
+        "random_books": random_books,
+    }
 
     return render(request, "book/book_detail.html", context)
 
