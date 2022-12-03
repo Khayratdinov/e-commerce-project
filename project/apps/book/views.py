@@ -44,6 +44,16 @@ def book_list(request):
     else:
 
         book_list = Book.objects.filter(status="True")
+
+    paginator = Paginator(book_list, 10)
+    page = request.GET.get("page")
+    try:
+        book_list = paginator.page(page)
+    except PageNotAnInteger:
+        book_list = paginator.page(1)
+    except EmptyPage:
+        book_list = paginator.page(paginator.num_pages)
+
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
