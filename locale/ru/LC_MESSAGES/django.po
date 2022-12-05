@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-04 18:50+0500\n"
+"POT-Creation-Date: 2022-12-05 15:37+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,6 +69,14 @@ msgstr "Блог"
 msgid "Contact"
 msgstr "Контакт"
 
+#: project/templates/blog/blog_list.html:19
+#: project/templates/blog/blog_list.html:24
+#, fuzzy
+#| msgid "Maqsulotlar sumasi"
+msgid "Maqollar sahifasi"
+msgstr "Количество продуктов"
+
+#: project/templates/blog/blog_list.html:22
 #: project/templates/book/book_detail.html:22
 #: project/templates/book/book_list.html:22
 #: project/templates/book/book_list_by_category.html:24
@@ -76,6 +84,10 @@ msgstr "Контакт"
 #: project/templates/order/checkout.html:21
 msgid "Bosh sahifa"
 msgstr "Домашняя страница"
+
+#: project/templates/blog/blog_list.html:58 project/templates/index.html:342
+msgid "Toliq oqish"
+msgstr "Читать далее"
 
 #: project/templates/book/book_detail.html:96
 #: project/templates/book/book_detail.html:173
@@ -260,10 +272,6 @@ msgstr "Новости"
 #: project/templates/index.html:320
 msgid "Biz haqqimizdagi yangiliklar bizni kuzatip boring"
 msgstr "Следите за новостями о нас"
-
-#: project/templates/index.html:342
-msgid "Toliq oqish"
-msgstr "Читать далее"
 
 #: project/templates/index.html:370
 msgid "Uyga bepul yetkazib berish"
