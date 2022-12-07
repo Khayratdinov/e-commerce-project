@@ -13,7 +13,7 @@ from project.apps.blog.forms import BlogCommentForm
 
 
 def blog_list(request):
-    blog_list = Blog.objects.filter(status="True").order_by("-create_at")
+    blog_list = Blog.objects.filter(status="True").order_by("-created_at")
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     context = {
