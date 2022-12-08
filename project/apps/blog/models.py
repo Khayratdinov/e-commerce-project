@@ -66,7 +66,7 @@ class CategoryBlog(BaseModel):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title_uz)[:50]
-        super(Blog, self).save(*args, **kwargs)
+        super(CategoryBlog, self).save(*args, **kwargs)
 
 
 # ============================================================================ #

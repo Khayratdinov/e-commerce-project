@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # ============================================================================ #
 from project.apps.common.models import HeadImages
@@ -15,6 +16,15 @@ from project.apps.blog.forms import BlogCommentForm
 def blog_list(request):
     blog_list = Blog.objects.filter(status="True").order_by("-created_at")
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
+
+    paginator = Paginator(blog_list, 10)
+    page = request.GET.get("page")
+    try:
+        blog_list = paginator.page(page)
+    except PageNotAnInteger:
+        blog_list = paginator.page(1)
+    except EmptyPage:
+        blog_list = paginator.page(paginator.num_pages)
 
     context = {
         "blog_list": blog_list,
