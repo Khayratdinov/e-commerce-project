@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-05 15:37+0500\n"
+"POT-Creation-Date: 2022-12-09 17:31+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,13 +69,12 @@ msgstr "Блог"
 msgid "Contact"
 msgstr "Контакт"
 
-#: project/templates/blog/blog_list.html:19
-#: project/templates/blog/blog_list.html:24
-#, fuzzy
-#| msgid "Maqsulotlar sumasi"
-msgid "Maqollar sahifasi"
-msgstr "Количество продуктов"
+#: project/templates/blog/blog_detail.html:18
+#: project/templates/blog/blog_detail.html:23
+msgid "blog-detail"
+msgstr ""
 
+#: project/templates/blog/blog_detail.html:21
 #: project/templates/blog/blog_list.html:22
 #: project/templates/book/book_detail.html:22
 #: project/templates/book/book_list.html:22
@@ -85,9 +84,33 @@ msgstr "Количество продуктов"
 msgid "Bosh sahifa"
 msgstr "Домашняя страница"
 
-#: project/templates/blog/blog_list.html:58 project/templates/index.html:342
-msgid "Toliq oqish"
-msgstr "Читать далее"
+#: project/templates/blog/blog_detail.html:60
+#: project/templates/book/book_detail.html:206
+msgid "izoh"
+msgstr "Комментарии"
+
+#: project/templates/blog/blog_detail.html:88
+#: project/templates/book/book_detail.html:207
+#: project/templates/book/book_detail.html:214
+msgid "Izoh yozish"
+msgstr "Написать комментарий"
+
+#: project/templates/blog/blog_detail.html:95
+msgid "Name"
+msgstr ""
+
+#: project/templates/blog/blog_detail.html:100
+msgid "Phone"
+msgstr ""
+
+#: project/templates/blog/blog_detail.html:106
+msgid "Message"
+msgstr ""
+
+#: project/templates/blog/blog_detail.html:111
+#: project/templates/book/book_detail.html:265
+msgid "Fikr qoldirish"
+msgstr "Оставить комментарий"
 
 #: project/templates/book/book_detail.html:96
 #: project/templates/book/book_detail.html:173
@@ -124,15 +147,6 @@ msgstr "Tags"
 msgid "Mijozlarning izohlari"
 msgstr "Комментарии клиентов"
 
-#: project/templates/book/book_detail.html:206
-msgid "izoh"
-msgstr "Комментарии"
-
-#: project/templates/book/book_detail.html:207
-#: project/templates/book/book_detail.html:214
-msgid "Izoh yozish"
-msgstr "Написать комментарий"
-
 #: project/templates/book/book_detail.html:223
 msgid "Enter your name"
 msgstr "Enter your name"
@@ -148,10 +162,6 @@ msgstr "Оценка"
 #: project/templates/book/book_detail.html:260
 msgid "Fikrlaringizni shu yerda yozing"
 msgstr "Пишите сюда свои мысли"
-
-#: project/templates/book/book_detail.html:265
-msgid "Fikr qoldirish"
-msgstr "Оставить комментарий"
 
 #: project/templates/book/book_detail.html:272
 msgid "rating qoldirish ushin royxattan otishingiz kerak"
@@ -244,6 +254,16 @@ msgstr "Дата добавления (Старый > Новый)"
 msgid "Kiritilgan sanasi (Yangi > eski)"
 msgstr "Дата добавления (новый > старый)"
 
+#: project/templates/inc/blog_sidebar.html:17
+#, fuzzy
+#| msgid "Category"
+msgid "Categories"
+msgstr "Категория"
+
+#: project/templates/inc/blog_sidebar.html:29
+msgid "Recent Post"
+msgstr ""
+
 #: project/templates/index.html:32
 msgid "Batafsil korish"
 msgstr "Узнать больше"
@@ -272,6 +292,10 @@ msgstr "Новости"
 #: project/templates/index.html:320
 msgid "Biz haqqimizdagi yangiliklar bizni kuzatip boring"
 msgstr "Следите за новостями о нас"
+
+#: project/templates/index.html:342
+msgid "Toliq oqish"
+msgstr "Читать далее"
 
 #: project/templates/index.html:370
 msgid "Uyga bepul yetkazib berish"
@@ -413,3 +437,8 @@ msgstr "Количество продуктов"
 #: project/templates/order/checkout.html:173
 msgid "Yetkazip berish xizmati"
 msgstr "Служба доставки"
+
+#, fuzzy
+#~| msgid "Maqsulotlar sumasi"
+#~ msgid "Maqollar sahifasi"
+#~ msgstr "Количество продуктов"

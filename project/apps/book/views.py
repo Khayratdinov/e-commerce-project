@@ -54,7 +54,7 @@ def book_list(request):
     except EmptyPage:
         book_list = paginator.page(paginator.num_pages)
 
-    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by('?')[:1]
 
     context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list.html", context)
