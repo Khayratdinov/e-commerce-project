@@ -57,7 +57,7 @@ def category_blog_detail(request, slug):
     context = {
         "blog_category": blog_category,
         "blog_list": blog_list,
-        "headImages": headImages,
+        "bradcaump_img": headImages,
     }
     return render(request, "blog/blog_list_by_category.html", context)
 

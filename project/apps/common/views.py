@@ -74,4 +74,4 @@ def contact_message(request):
         "setting": setting,
         "bradcaump_img": bradcaump_img,
     }
-    return render(request, "frontend/home/contact.html", context)
+    return render(request, "common/contact.html", context)

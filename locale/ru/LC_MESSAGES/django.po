@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-09 17:36+0500\n"
+"POT-Creation-Date: 2022-12-09 18:08+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,6 +62,7 @@ msgid "Category"
 msgstr "Категория"
 
 #: project/templates/base.html:185 project/templates/base.html:448
+#: project/templates/blog/blog_list_by_category.html:24
 msgid "Blog"
 msgstr "Блог"
 
@@ -76,10 +77,12 @@ msgstr ""
 
 #: project/templates/blog/blog_detail.html:21
 #: project/templates/blog/blog_list.html:22
+#: project/templates/blog/blog_list_by_category.html:22
 #: project/templates/book/book_detail.html:22
 #: project/templates/book/book_list.html:22
 #: project/templates/book/book_list_by_category.html:24
 #: project/templates/book/book_list_by_tag.html:23
+#: project/templates/common/contact.html:28
 #: project/templates/order/checkout.html:21
 msgid "Bosh sahifa"
 msgstr "Домашняя страница"
