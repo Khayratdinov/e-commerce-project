@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -75,3 +75,17 @@ def contact_message(request):
         "bradcaump_img": bradcaump_img,
     }
     return render(request, "common/contact.html", context)
+
+
+def search(request):
+    if request.method == 'POST':
+        search_text = request.POST['search_text']
+        books = Book.objects.filter(title__icontains=search_text)
+        bradcaump_img = HeadImages.objects.filter(status=True).order_by('?')[:1]
+        context = {
+            'books': books,
+            'keyword': search_text,
+            'bradcaump_img': bradcaump_img,
+        }
+        return render(request, 'common/search.html', context)
+    return redirect('home')

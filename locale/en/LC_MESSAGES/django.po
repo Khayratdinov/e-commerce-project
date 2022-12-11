@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-09 18:08+0500\n"
+"POT-Creation-Date: 2022-12-10 11:03+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,6 +81,7 @@ msgstr ""
 #: project/templates/book/book_list_by_category.html:24
 #: project/templates/book/book_list_by_tag.html:23
 #: project/templates/common/contact.html:28
+#: project/templates/common/search.html:24
 #: project/templates/order/checkout.html:21
 msgid "Bosh sahifa"
 msgstr "Home"
@@ -177,19 +178,22 @@ msgid "Bu kitoblar ham sizga yoqishi mumkin"
 msgstr "You may also like these books"
 
 #: project/templates/book/book_detail.html:344
-#: project/templates/book/book_list.html:110 project/templates/index.html:144
+#: project/templates/book/book_list.html:110
+#: project/templates/common/search.html:113 project/templates/index.html:144
 #: project/templates/index.html:238
 msgid "CHEGIRMA"
 msgstr "DISCOUNT"
 
 #: project/templates/book/book_detail.html:346
-#: project/templates/book/book_list.html:112 project/templates/index.html:146
+#: project/templates/book/book_list.html:112
+#: project/templates/common/search.html:115 project/templates/index.html:146
 #: project/templates/index.html:240
 msgid "YANGI"
 msgstr "NEW"
 
 #: project/templates/book/book_list.html:19
 #: project/templates/book/book_list.html:24
+#: project/templates/common/search.html:26
 #, fuzzy
 #| msgid "Yangi Kitobalar"
 msgid "Kitoblar"
@@ -198,62 +202,80 @@ msgstr "New books"
 #: project/templates/book/book_list.html:46
 #: project/templates/book/book_list_by_category.html:48
 #: project/templates/book/book_list_by_tag.html:47
+#: project/templates/common/search.html:49
 msgid "Sort By"
 msgstr "Sort By"
 
 #: project/templates/book/book_list.html:57
 #: project/templates/book/book_list_by_category.html:59
 #: project/templates/book/book_list_by_tag.html:58
+#: project/templates/common/search.html:60
 msgid "Odatiy"
 msgstr "Normal"
 
 #: project/templates/book/book_list.html:58
 #: project/templates/book/book_list_by_category.html:60
 #: project/templates/book/book_list_by_tag.html:59
+#: project/templates/common/search.html:61
 msgid "Nomi (А - Ya)"
 msgstr "Name (A - Z)"
 
 #: project/templates/book/book_list.html:59
 #: project/templates/book/book_list_by_category.html:61
 #: project/templates/book/book_list_by_tag.html:60
+#: project/templates/common/search.html:62
 msgid "Nomi (Ya - А)"
 msgstr "Name (Z - A)"
 
 #: project/templates/book/book_list.html:60
 #: project/templates/book/book_list_by_category.html:62
 #: project/templates/book/book_list_by_tag.html:61
+#: project/templates/common/search.html:63
 msgid "Narxi (Аrzondan > Qimmatgacha)"
 msgstr "Price (Cheap > Expensive)"
 
 #: project/templates/book/book_list.html:61
 #: project/templates/book/book_list_by_category.html:63
 #: project/templates/book/book_list_by_tag.html:62
+#: project/templates/common/search.html:64
 msgid "Narxi (Qimmatdan > Аrzongacha)"
 msgstr "Price (From Expensive > Cheap)"
 
 #: project/templates/book/book_list.html:62
 #: project/templates/book/book_list_by_category.html:64
 #: project/templates/book/book_list_by_tag.html:63
+#: project/templates/common/search.html:65
 msgid "Berilgan baxosi (Eng yuqorisi)"
 msgstr "Rated (Highest)"
 
 #: project/templates/book/book_list.html:63
 #: project/templates/book/book_list_by_category.html:65
 #: project/templates/book/book_list_by_tag.html:64
+#: project/templates/common/search.html:66
 msgid "Berilgan baxosi (Eng past)"
 msgstr "Quoted (Lowest)"
 
 #: project/templates/book/book_list.html:64
 #: project/templates/book/book_list_by_category.html:66
 #: project/templates/book/book_list_by_tag.html:65
+#: project/templates/common/search.html:67
 msgid "Kiritilgan sanasi (Eski > yangi)"
 msgstr "Date Added (Old > New)"
 
 #: project/templates/book/book_list.html:65
 #: project/templates/book/book_list_by_category.html:67
 #: project/templates/book/book_list_by_tag.html:66
+#: project/templates/common/search.html:68
 msgid "Kiritilgan sanasi (Yangi > eski)"
 msgstr "Date Added (New > Old)"
+
+#: project/templates/common/search.html:219
+msgid "Sizning sorovingiz boyicha Kitoblar topilmadi"
+msgstr ""
+
+#: project/templates/common/search.html:220
+msgid "Biz bilan boglaning"
+msgstr ""
 
 #: project/templates/inc/blog_sidebar.html:17
 #, fuzzy
