@@ -3,6 +3,8 @@ from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Sum
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.translation import get_language
 
 # ============================================================================ #
 from project.apps.common.models import (
@@ -78,14 +80,30 @@ def contact_message(request):
 
 
 def search(request):
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
-        books = Book.objects.filter(title__icontains=search_text)
-        bradcaump_img = HeadImages.objects.filter(status=True).order_by('?')[:1]
+    lang = str(get_language())
+    if request.method == "POST":
+        search_text = request.POST["search_text"]
+        if lang == "ru":
+            news_list = Book.objects.filter(title_ru__icontains=search_text)
+        elif lang == "uz":
+            news_list = Book.objects.filter(title_uz__icontains=search_text)
+        elif lang == "en":
+            news_list = Book.objects.filter(title_en__icontains=search_text)
+        else:
+            news_list = Book.objects.filter(title__icontains=search_text)
+
+        paginator = Paginator(news_list, 2)
+        page = request.GET.get("page")
+        try:
+            news_list = paginator.page(page)
+        except PageNotAnInteger:
+            news_list = paginator.page(1)
+        except EmptyPage:
+            news_list = paginator.page(paginator.num_pages)
+
         context = {
-            'books': books,
-            'keyword': search_text,
-            'bradcaump_img': bradcaump_img,
+            "news_list": news_list,
+            "keyword": search_text,
         }
-        return render(request, 'common/search.html', context)
-    return redirect('home')
+        return render(request, "common/search.html", context)
+    return redirect("home")
