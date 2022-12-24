@@ -58,6 +58,22 @@ class CategoryForm(ModelForm):
 
 
 class BookForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(BookForm, self).__init__(*args, **kwargs)
+        self.fields['title_uz'].label = "Kitob nomi o`zbek tilida"
+        self.fields['title_ru'].label = "Kitob nomi rus tilida"
+        self.fields['title_en'].label = "Kitob nomi ingliz tilida"
+        self.fields['detail_uz'].label = "Kitob haqqida malumot o`zbek tilida"
+        self.fields['detail_ru'].label = "Kitob haqqida malumot rus tilida"
+        self.fields['detail_en'].label = "Kitob haqqida malumot ingliz tilida"
+        self.fields['coverpage'].label = "Kitob rasmi"
+        self.fields['price'].label = "Kitob narxi"
+        self.fields['category'].label = "Kitob cateogoriyasi"
+        self.fields['author'].label = "Kitob mualifi"
+        self.fields['status'].label = "Kitob mavjudligi"
+        self.fields['sales_status'].label = "Kitob holati"
+        self.fields['tags'].label = "Kitob uchin kalit sozlar"
+
     class Meta:
         model = Book
         fields = [
@@ -76,24 +92,27 @@ class BookForm(ModelForm):
             "tags",
         ]
 
+
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={"class": "form-control", "placeholder": "Kitob nomi o`zbek tilida"}
             ),
             "title_ru": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={"class": "form-control", "placeholder": "Kitob nomi rus tilida"}
             ),
             "title_en": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={"class": "form-control mb-5", "placeholder": "Kitob nomi ingliz tilida"}
             ),
             "detail_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter detail"}
+                attrs={"class": "form-control ", "placeholder": "Kitob haqqida malumot o`zbek tilida"}
             ),
+
             "detail_ru": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter detail"}
+
+                attrs={"class": "form-control", "placeholder": "Kitob haqqida malumot rus tilida"}
             ),
             "detail_en": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter detail"}
+                attrs={"class": "form-control", "placeholder": "Kitob haqqida malumot ingliz tilida"}
             ),
             "coverpage": FileInput(
                 attrs={"class": "form-control", "placeholder": "Enter image"}
@@ -113,6 +132,8 @@ class BookForm(ModelForm):
             "status": forms.Select(attrs={"class": "form-select"}),
             "sales_status": forms.Select(attrs={"class": "form-select"}),
         }
+
+
 
 
 # ============================= BOOK SLIDER FORM ============================= #
