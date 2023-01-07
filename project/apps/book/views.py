@@ -19,32 +19,26 @@ from project.apps.common.models import HeadImages
 # ============================================================================ #
 
 
+SORT_FIELDS = {
+    "name_A_Z": "title",
+    "name_Z_A": "-title",
+    "price_low_to_high": "price",
+    "price_high_to_low": "-price",
+    "rating_highest": "-rating",
+    "rating_lowest": "rating",
+    "added_date_old_new": "-id",
+    "added_date_new_old": "id",
+}
+
+
 def book_list(request):
+    book_list = Book.objects.filter(status="True")
+
     if request.method == "POST":
         select = request.POST.get("sort")
-
-        if select == "name_A_Z":
-            book_list = Book.objects.filter(status="True").order_by("title")
-        elif select == "name_Z_A":
-            book_list = Book.objects.filter(status="True").order_by("-title")
-        elif select == "price_low_to_high":
-            book_list = Book.objects.filter(status="True").order_by("price")
-        elif select == "price_high_to_low":
-            book_list = Book.objects.filter(status="True").order_by("-price")
-        elif select == "rating_highest":
-            book_list = Book.objects.filter(status="True").order_by("-rating")
-        elif select == "rating_lowest":
-            book_list = Book.objects.filter(status="True").order_by("rating")
-        elif select == "added_date_old_new":
-            book_list = Book.objects.filter(status="True").order_by("-id")
-        elif select == "added_date_new_old":
-            book_list = Book.objects.filter(status="True").order_by("id")
-        else:
-            book_list = Book.objects.filter(status="True")
-    else:
-
-        book_list = Book.objects.filter(status="True")
-
+        sort_field = SORT_FIELDS.get(select, None)
+        if sort_field is not None:
+            book_list = book_list.order_by(sort_field)
     paginator = Paginator(book_list, 10)
     page = request.GET.get("page")
     try:
@@ -54,7 +48,7 @@ def book_list(request):
     except EmptyPage:
         book_list = paginator.page(paginator.num_pages)
 
-    bradcaump_img = HeadImages.objects.filter(status=True).order_by('?')[:1]
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list.html", context)
