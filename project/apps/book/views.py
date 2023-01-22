@@ -12,6 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from project.apps.book.models import Category, Tag, Book, BookSlider, BookComment
 from project.apps.book.forms import BookCommentForm
 from project.apps.common.models import HeadImages
+from project.apps.core.utils import paginate_queryset
 
 
 # ============================================================================ #
@@ -39,15 +40,8 @@ def book_list(request):
         sort_field = SORT_FIELDS.get(select, None)
         if sort_field is not None:
             book_list = book_list.order_by(sort_field)
-    paginator = Paginator(book_list, 10)
-    page = request.GET.get("page")
-    try:
-        book_list = paginator.page(page)
-    except PageNotAnInteger:
-        book_list = paginator.page(1)
-    except EmptyPage:
-        book_list = paginator.page(paginator.num_pages)
 
+    book_list = paginate_queryset(request, book_list)
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     context = {"book_list": book_list, "bradcaump_img": bradcaump_img}
@@ -87,14 +81,7 @@ def book_list_by_category(request, slug):
     books = Book.objects.filter(category=category)
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    paginator = Paginator(books, 10)
-    page = request.GET.get("page")
-    try:
-        books = paginator.page(page)
-    except PageNotAnInteger:
-        books = paginator.page(1)
-    except EmptyPage:
-        books = paginator.page(paginator.num_pages)
+    books = paginate_queryset(request, books)
 
     context = {"category": category, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_category.html", context)
@@ -105,14 +92,7 @@ def book_list_by_tag(request, slug):
     books = Book.objects.filter(tags=tag)
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    paginator = Paginator(books, 10)
-    page = request.GET.get("page")
-    try:
-        books = paginator.page(page)
-    except PageNotAnInteger:
-        books = paginator.page(1)
-    except EmptyPage:
-        books = paginator.page(paginator.num_pages)
+    books = paginate_queryset(request, books)
 
     context = {"tag": tag, "books": books, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_tag.html", context)

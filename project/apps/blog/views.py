@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from project.apps.common.models import HeadImages
 from project.apps.blog.models import Blog, CategoryBlog, BlogComment
 from project.apps.blog.forms import BlogCommentForm
+from project.apps.core.utils import paginate_queryset
 
 # Create your views here.
 
@@ -17,14 +18,7 @@ def blog_list(request):
     blog_list = Blog.objects.filter(status="True").order_by("-created_at")
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    paginator = Paginator(blog_list, 10)
-    page = request.GET.get("page")
-    try:
-        blog_list = paginator.page(page)
-    except PageNotAnInteger:
-        blog_list = paginator.page(1)
-    except EmptyPage:
-        blog_list = paginator.page(paginator.num_pages)
+    blog_list = paginate_queryset(request, blog_list)
 
     context = {
         "blog_list": blog_list,
@@ -54,6 +48,8 @@ def category_blog_detail(request, slug):
     blog_list = Blog.objects.filter(category=blog_category, status="True").order_by(
         "-created_at"
     )
+
+    blog_list = paginate_queryset(request, blog_list)
     context = {
         "blog_category": blog_category,
         "blog_list": blog_list,
