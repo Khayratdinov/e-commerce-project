@@ -49,28 +49,35 @@ def book_list(request):
 
 
 def book_detail(request, slug):
-    book = get_object_or_404(Book, slug=slug)
+    book = get_object_or_404(
+        Book.objects.prefetch_related(
+            "category", "tags", "bookslider_set", "bookcomment_set"
+        ),
+        slug=slug,
+    )
 
-    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
-    book_slider = BookSlider.objects.filter(book=book)
+    # bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
+    # book_slider = BookSlider.objects.filter(book=book)
 
-    comments = BookComment.objects.filter(book=book)
+    # comments = BookComment.objects.filter(book=book)
 
-    category_list = Category.objects.filter(book=book)
-    books_by_category = Book.objects.filter(category__in=category_list, status="True")
-    tags = Tag.objects.filter(book=book)
+    # category_list = Category.objects.filter(book=book)
+    # books_by_category = Book.objects.filter(category__in=category_list, status="True")
+    # tags = Tag.objects.filter(book=book)
 
-    random_books = Book.objects.filter(status="True").order_by("?")[:4]
+    # random_books = Book.objects.filter(status="True").order_by("?")[:4]
 
     context = {
         "book": book,
-        "bradcaump_img": bradcaump_img,
-        "book_slider": book_slider,
-        "comments": comments,
-        "category_list": category_list,
-        "books_by_category": books_by_category,
-        "tags": tags,
-        "random_books": random_books,
+        "bradcaump_img": HeadImages.objects.filter(status=True).order_by("?")[:1],
+        "book_slider": book.bookslider_set.all(),
+        "comments": book.bookcomment_set.all(),
+        "category_list": book.category.all(),
+        "books_by_category": Book.objects.filter(
+            category__in=book.category.all(), status="True"
+        ),
+        "tags": book.tags.all(),
+        "random_books": Book.objects.filter(status="True").order_by("?")[:4],
     }
 
     return render(request, "book/book_detail.html", context)
@@ -78,23 +85,37 @@ def book_detail(request, slug):
 
 def book_list_by_category(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    books = Book.objects.filter(category=category)
+    book_list = Book.objects.filter(category=category)
+
+    if request.method == "POST":
+        select = request.POST.get("sort")
+        sort_field = SORT_FIELDS.get(select, None)
+        if sort_field is not None:
+            book_list = book_list.order_by(sort_field)
+
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    books = paginate_queryset(request, books)
+    book_list = paginate_queryset(request, book_list)
 
-    context = {"category": category, "books": books, "bradcaump_img": bradcaump_img}
+    context = {"category": category, "books": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_category.html", context)
 
 
 def book_list_by_tag(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
-    books = Book.objects.filter(tags=tag)
+    book_list = Book.objects.filter(tags=tag)
+
+    if request.method == "POST":
+        select = request.POST.get("sort")
+        sort_field = SORT_FIELDS.get(select, None)
+        if sort_field is not None:
+            book_list = book_list.order_by(sort_field)
+
     bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
-    books = paginate_queryset(request, books)
+    book_list = paginate_queryset(request, book_list)
 
-    context = {"tag": tag, "books": books, "bradcaump_img": bradcaump_img}
+    context = {"tag": tag, "books": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_tag.html", context)
 
 
