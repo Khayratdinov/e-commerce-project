@@ -6,7 +6,6 @@ from django.db.models import Avg
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # ============================================================================ #
 from project.apps.book.models import Category, Tag, Book, BookSlider, BookComment
@@ -31,6 +30,8 @@ SORT_FIELDS = {
     "added_date_new_old": "id",
 }
 
+# ================================= BOOK LIST ================================ #
+
 
 def book_list(request):
     book_list = Book.objects.filter(status="True")
@@ -48,39 +49,38 @@ def book_list(request):
     return render(request, "book/book_list.html", context)
 
 
+# ================================ BOOK DETAIL =============================== #
+
+
 def book_detail(request, slug):
-    book = get_object_or_404(
-        Book.objects.prefetch_related(
-            "category", "tags", "bookslider_set", "bookcomment_set"
-        ),
-        slug=slug,
-    )
+    book = get_object_or_404(Book, slug=slug)
 
-    # bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
-    # book_slider = BookSlider.objects.filter(book=book)
+    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
+    book_slider = BookSlider.objects.filter(book=book)
 
-    # comments = BookComment.objects.filter(book=book)
+    comments = BookComment.objects.filter(book=book)
 
-    # category_list = Category.objects.filter(book=book)
-    # books_by_category = Book.objects.filter(category__in=category_list, status="True")
-    # tags = Tag.objects.filter(book=book)
+    category_list = Category.objects.filter(book=book)
+    books_by_category = Book.objects.filter(category__in=category_list, status="True")
+    tags = Tag.objects.filter(book=book)
 
-    # random_books = Book.objects.filter(status="True").order_by("?")[:4]
+    random_books = Book.objects.filter(status="True").order_by("?")[:4]
 
     context = {
         "book": book,
-        "bradcaump_img": HeadImages.objects.filter(status=True).order_by("?")[:1],
-        "book_slider": book.bookslider_set.all(),
-        "comments": book.bookcomment_set.all(),
-        "category_list": book.category.all(),
-        "books_by_category": Book.objects.filter(
-            category__in=book.category.all(), status="True"
-        ),
-        "tags": book.tags.all(),
-        "random_books": Book.objects.filter(status="True").order_by("?")[:4],
+        "bradcaump_img": bradcaump_img,
+        "book_slider": book_slider,
+        "comments": comments,
+        "category_list": category_list,
+        "books_by_category": books_by_category,
+        "tags": tags,
+        "random_books": random_books,
     }
 
     return render(request, "book/book_detail.html", context)
+
+
+# =========================== BOOK LIST BY CATEGORY ========================== #
 
 
 def book_list_by_category(request, slug):
@@ -101,6 +101,9 @@ def book_list_by_category(request, slug):
     return render(request, "book/book_list_by_category.html", context)
 
 
+# ============================= BOOK LIST BY TAG ============================= #
+
+
 def book_list_by_tag(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
     book_list = Book.objects.filter(tags=tag)
@@ -117,6 +120,9 @@ def book_list_by_tag(request, slug):
 
     context = {"tag": tag, "books": book_list, "bradcaump_img": bradcaump_img}
     return render(request, "book/book_list_by_tag.html", context)
+
+
+# =============================== BOOK COMMENT =============================== #
 
 
 def add_comment(request, book_id):
@@ -145,3 +151,6 @@ def add_comment(request, book_id):
             messages.success(request, "Izohingiz qabul qilindi !")
             return HttpResponseRedirect(url)
     return HttpResponseRedirect(url)
+
+
+# ============================================================================ #
