@@ -160,16 +160,27 @@ class BookComment(BaseModel):
         return self.book.title
 
 
-# ────────────────────────────── COLLECTION BOOK ───────────────────────────── #
+# ================================= GROUPBOOK ================================ #
 
 
 class CollectionBook(BaseModel):
-
     STATUS = (
-        ("True", "Available"),
-        ("False", "Not Available"),
+        ("True", "Mavjud"),
+        ("False", "Mavjud emas"),
     )
 
+    SPECIAL_STATUS = (
+        ("True", "Maqsus toplam"),
+        ("False", "Oddiy toplam"),
+    )
+
+    title = models.CharField(max_length=200, verbose_name="Toplam nomi")
+    description = models.TextField(
+        blank=True, null=True, verbose_name="Toplam haqida qisqacha"
+    )
+    body = RichTextUploadingField(blank=True, null=True, verbose_name="Toplam haqida")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Narxi")
+    slug = models.SlugField(max_length=350, null=False, unique=True)
     image = ProcessedImageField(
         upload_to="images/",
         processors=[ResizeToFill(370, 400)],
@@ -177,6 +188,50 @@ class CollectionBook(BaseModel):
         options={"quality": 100},
         null=True,
         blank=True,
+        verbose_name="Toplam rasmi",
     )
-    url = models.CharField(max_length=555, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS, default="True")
+    status = models.CharField(
+        max_length=15, choices=STATUS, default="True", verbose_name="Mavjudligi"
+    )
+    special_status = models.CharField(
+        max_length=20,
+        choices=SPECIAL_STATUS,
+        default="False",
+        verbose_name="Sotuv holati",
+    )
+
+    class Meta:
+        verbose_name = "4. Kitob toplami"
+        verbose_name_plural = "4. Kitoblar toplami"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title_uz)
+        super(CollectionBook, self).save(*args, **kwargs)
+
+
+
+# ============================= COLLECTION SLIDER ============================ #
+
+
+class CollectionSlider(BaseModel):
+    collection = models.ForeignKey(
+        CollectionBook, on_delete=models.CASCADE, related_name="collectionslider"
+    )
+    image = ProcessedImageField(
+        upload_to="collection/",
+        processors=[ResizeToFill(450, 565)],
+        format="JPEG",
+        options={"quality": 100},
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = "6. Collection slider rasmi"
+        verbose_name_plural = "6. Collection slider rasmi"
+
+    def __str__(self):
+        return self.collection.title

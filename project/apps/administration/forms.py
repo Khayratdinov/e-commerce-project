@@ -454,16 +454,7 @@ class CommonInfoForm(ModelForm):
 class CollectionBookForm(ModelForm):
     class Meta:
         model = CollectionBook
-        fields = ["image", "url", "status"]
-        widgets = {
-            "image": FileInput(
-                attrs={"class": "form-control", "placeholder": "Images"}
-            ),
-            "url": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter price"}
-            ),
-            "status": forms.Select(attrs={"class": "form-select"}),
-        }
+        fields = '__all__'
 
 
 # ==================================== FAQ =================================== #
