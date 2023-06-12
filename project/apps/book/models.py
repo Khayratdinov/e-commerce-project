@@ -27,8 +27,12 @@ User = get_user_model()
 
 
 class Category(BaseModel):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(null=False, unique=True)
+    title = models.CharField(max_length=200, verbose_name="Kategoriya nomi")
+    slug = models.SlugField(max_length=350, null=False, unique=True)
+
+    class Meta:
+        verbose_name = "2. Kitob kategoriyasi"
+        verbose_name_plural = "2. Kitoblar kategoriyasi"
 
     def __str__(self):
         return self.title
@@ -42,8 +46,12 @@ class Category(BaseModel):
 
 
 class Tag(BaseModel):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(null=False, unique=True)
+    title = models.CharField(max_length=200, verbose_name="Kalit so`z nomi")
+    slug = models.SlugField(max_length=350, null=False, unique=True)
+
+    class Meta:
+        verbose_name = "3. Kitob kalit so`zlari"
+        verbose_name_plural = "3. Kitoblar kalit so`zlari"
 
     def __str__(self):
         return self.title
