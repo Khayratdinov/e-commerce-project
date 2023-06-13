@@ -9,7 +9,7 @@ register = template.Library()
 
 @register.simple_tag(name="get_categories")
 def get_categories():
-    category_list = Category.objects.all()
+    category_list = Category.objects.all()[:6]
     return category_list
 
 
