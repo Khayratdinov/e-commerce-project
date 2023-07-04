@@ -4,5 +4,14 @@ pillow
 django-ckeditor
 django-imagekit
 django-modeltranslation
-
 python-slugify
+clickuz
+djangorestframework
+payme-pkg
+django-rosetta
+gunicorn
+psycopg2-binary
+django-cors-headers
+pytest-django
+python-telegram-bot
+PaycomUz

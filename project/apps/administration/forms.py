@@ -19,8 +19,18 @@ from project.apps.book.models import (
     Tag,
     BookComment,
     CollectionBook,
+    CollectionSlider,
 )
-from project.apps.common.models import HomeSlider, HeadImages, CommonInfo, FAQ
+from project.apps.common.models import (
+    HomeSlider,
+    HeadImages,
+    CommonInfo,
+    FAQ,
+    About,
+    ShippingInfo,
+    PaymentInfo,
+    DiscountInfo,
+)
 from project.apps.order.models import Shipping
 from project.apps.administration.models import ShopCart
 from project.apps.blog.models import CategoryBlog, Blog
@@ -37,13 +47,22 @@ User = get_user_model()
 
 class CategoryForm(ModelForm):
     class Meta:
-
         model = Category
         fields = ["title_uz", "title_ru", "title_en"]
 
+        labels = {
+            "title_uz": "Kitob Kategoriyasi nomi o`zbek tilida",
+            "title_ru": "Kitob Kategoriyasi nomi rus tilida",
+            "title_en": "Kitob Kategoriyasi nomi ingliz tilida",
+        }
+
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Category Uzb tilida"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Category Uzb tilida",
+                }
             ),
             "title_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Category Rus tilida"}
@@ -58,22 +77,6 @@ class CategoryForm(ModelForm):
 
 
 class BookForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(BookForm, self).__init__(*args, **kwargs)
-        self.fields['title_uz'].label = "Kitob nomi o`zbek tilida"
-        self.fields['title_ru'].label = "Kitob nomi rus tilida"
-        self.fields['title_en'].label = "Kitob nomi ingliz tilida"
-        self.fields['detail_uz'].label = "Kitob haqqida malumot o`zbek tilida"
-        self.fields['detail_ru'].label = "Kitob haqqida malumot rus tilida"
-        self.fields['detail_en'].label = "Kitob haqqida malumot ingliz tilida"
-        self.fields['coverpage'].label = "Kitob rasmi"
-        self.fields['price'].label = "Kitob narxi"
-        self.fields['category'].label = "Kitob cateogoriyasi"
-        self.fields['author'].label = "Kitob mualifi"
-        self.fields['status'].label = "Kitob mavjudligi"
-        self.fields['sales_status'].label = "Kitob holati"
-        self.fields['tags'].label = "Kitob uchin kalit sozlar"
-
     class Meta:
         model = Book
         fields = [
@@ -85,55 +88,125 @@ class BookForm(ModelForm):
             "detail_en",
             "coverpage",
             "price",
-            "category",
+            "discount_price",
             "author",
+            "isbn",
+            "language",
+            "date_published",
+            "publisher",
+            "category",
+            "tags",
+            "collection_book",
             "status",
             "sales_status",
-            "tags",
         ]
 
+        labels = {
+            "title_uz": "Kitob nomi o`zbek tilida",
+            "title_ru": "Kitob nomi rus tilida",
+            "title_en": "Kitob nomi ingliz tilida",
+            "detail_uz": "Kitob haqqida malumot o`zbek tilida",
+            "detail_ru": "Kitob haqqida malumot rus tilida",
+            "detail_en": "Kitob haqqida malumot ingliz tilida",
+            "coverpage": "Kitob rasmi",
+            "price": "Kitob narxi",
+            "discount_price": "Chegirma %",
+            "publisher": "Kim tomonidan nashr qilingan",
+            "category": "Kitob cateogoriyasi",
+            "author": "Kitob mualifi",
+            "isbn": "Kitobning ISBN raqami",
+            "language": "Kitob qaysi tilda",
+            "date_published": "Kitob qashon shiqarilgan",
+            "status": "Kitob mavjudligi",
+            "sales_status": "Kitob holati",
+            "tags": "Kitob uchin kalit sozlar",
+            "collection_book": "Kitoblar toplami",
+        }
 
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Kitob nomi o`zbek tilida"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "title_ru": TextInput(
-                attrs={"class": "form-control", "placeholder": "Kitob nomi rus tilida"}
+                attrs={"class": "form-control", "placeholder": "Enter title"}
             ),
             "title_en": TextInput(
-                attrs={"class": "form-control mb-5", "placeholder": "Kitob nomi ingliz tilida"}
+                attrs={"class": "form-control mb-5", "placeholder": "Enter title"}
             ),
             "detail_uz": TextInput(
-                attrs={"class": "form-control ", "placeholder": "Kitob haqqida malumot o`zbek tilida"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter detail",
+                }
             ),
-
             "detail_ru": TextInput(
-
-                attrs={"class": "form-control", "placeholder": "Kitob haqqida malumot rus tilida"}
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
             ),
             "detail_en": TextInput(
-                attrs={"class": "form-control", "placeholder": "Kitob haqqida malumot ingliz tilida"}
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
             ),
             "coverpage": FileInput(
-                attrs={"class": "form-control", "placeholder": "Enter image"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter image",
+                }
             ),
             "price": NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter price",
+                    "required": True,
+                }
+            ),
+            "discount_price": NumberInput(
                 attrs={"class": "form-control", "placeholder": "Enter price"}
             ),
             "author": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter author"}
             ),
+            "isbn": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter isbn"}
+            ),
+            "language": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter language"}
+            ),
+            "date_published": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter date_published"}
+            ),
+            "publisher": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter publisher"}
+            ),
             "category": SelectMultiple(
-                attrs={"class": "form-control", "placeholder": "Enter category"}
+                attrs={
+                    "class": "multiple-select",
+                    "placeholder": "Enter category",
+                    "data-placeholder": "multiple",
+                    "placeholder": "Enter publisher",
+                    "required": True,
+                }
             ),
             "tags": SelectMultiple(
-                attrs={"class": "form-control", "placeholder": "Enter tags"}
+                attrs={
+                    "class": "multiple-select",
+                    "multiple": "multiple",
+                    "placeholder": "Enter tags",
+                }
+            ),
+            "collection_book": SelectMultiple(
+                attrs={
+                    "class": "multiple-select",
+                    "multiple": "multiple",
+                    "placeholder": "Enter collection_book",
+                }
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
             "sales_status": forms.Select(attrs={"class": "form-select"}),
         }
-
-
 
 
 # ============================= BOOK SLIDER FORM ============================= #
@@ -160,9 +233,19 @@ class TagForm(ModelForm):
         model = Tag
         fields = ["title_uz", "title_ru", "title_en"]
 
+        labels = {
+            "title_uz": "Kitob kalit soz nomi o`zbek tilida",
+            "title_ru": "Kitob kalit soz nomi rus tilida",
+            "title_en": "Kitob kalit soz nomi ingliz tilida",
+        }
+
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "title_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
@@ -203,12 +286,15 @@ class HomeSliderForm(ModelForm):
             "description_en",
             "status",
             "url",
-            "shape",
             "cover",
         ]
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "title_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
@@ -217,7 +303,10 @@ class HomeSliderForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter title"}
             ),
             "description_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter description"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter description",
+                }
             ),
             "description_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter description"}
@@ -229,9 +318,6 @@ class HomeSliderForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter url"}
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
-            "shape": FileInput(
-                attrs={"class": "form-control", "placeholder": "Enter shape"}
-            ),
             "cover": FileInput(
                 attrs={"class": "form-control", "placeholder": "Enter cover"}
             ),
@@ -247,13 +333,25 @@ class ShippingForm(ModelForm):
         fields = ["title", "price", "wight"]
         widgets = {
             "title": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "price": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter price"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter price",
+                }
             ),
             "wight": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter wight"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter wight",
+                }
             ),
         }
 
@@ -298,9 +396,18 @@ class CategoryBlogForm(ModelForm):
             "title_ru",
             "title_en",
         ]
+        labels = {
+            "title_uz": "Category Blog nomi o`zbek tilida",
+            "title_ru": "Category Blog nomi rus tilida",
+            "title_en": "Category Blog nomi ingliz tilida",
+        }
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "title_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
@@ -331,9 +438,27 @@ class BlogForm(ModelForm):
             "category",
             "status",
         ]
+
+        labels = {
+            "title_uz": "Blog nomi o`zbek tilida",
+            "title_ru": "Blog nomi rus tilida",
+            "title_en": "Blog nomi ingliz tilida",
+            "description_uz": "Blog haqqida qisqacha malumot o`zbek tilida",
+            "description_ru": "Blog haqqida qisqacha malumot rus tilida",
+            "description_en": "Blog haqqida qisqacha malumot ingliz tilida",
+            "text_uz": "Blog haqqida malumot o`zbek tilida",
+            "text_ru": "Blog haqqida malumot rus tilida",
+            "text_en": "Blog haqqida malumot ingliz tilida",
+            "image": "Blog rasmi",
+            "status": "Blog mavjudligi",
+        }
         widgets = {
             "title_uz": TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter title"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
             ),
             "title_ru": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter title"}
@@ -351,10 +476,18 @@ class BlogForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter description"}
             ),
             "image": FileInput(
-                attrs={"class": "form-control", "placeholder": "Enter image"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter image",
+                }
             ),
             "text_uz": CKEditorWidget(
-                attrs={"class": "form-control", "placeholder": "Enter text"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter text",
+                }
             ),
             "text_ru": CKEditorWidget(
                 attrs={"class": "form-control", "placeholder": "Enter text"}
@@ -362,7 +495,12 @@ class BlogForm(ModelForm):
             "text_en": CKEditorWidget(
                 attrs={"class": "form-control", "placeholder": "Enter text"}
             ),
-            "category": forms.Select(attrs={"class": "form-select"}),
+            "category": forms.Select(
+                attrs={
+                    "class": "form-select",
+                    "required": True,
+                }
+            ),
             "status": forms.Select(attrs={"class": "form-select"}),
         }
 
@@ -376,7 +514,11 @@ class RandomBradcaumpImgForm(ModelForm):
         fields = ["image", "status"]
         widgets = {
             "image": FileInput(
-                attrs={"class": "form-control", "placeholder": "Enter image"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter image",
+                }
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
         }
@@ -404,6 +546,23 @@ class CommonInfoForm(ModelForm):
             "facebook",
             "status",
         ]
+
+        labels = {
+            "description_contact_uz": "Contact pagega malumot o`zbek tilida",
+            "description_contact_ru": "Contact pagega malumot rus tilida",
+            "description_contact_en": "Contact pagega malumot  ingliz tilida",
+            "description_footer_uz": "Footer bolimiga malumot o`zbek tilida",
+            "description_footer_ru": "Footer bolimiga malumot rus tilida",
+            "description_footer_en": "Footer bolimiga malumot ingliz tilida",
+            "logo": "Logo",
+            "phone": "Telefon raqam",
+            "email": "Email manzil",
+            "address": "Toliq manzil",
+            "instagram": "Instagram account",
+            "facebook": "facebook account",
+            "telegram": "telegram account",
+            "status": "Status",
+        }
         widgets = {
             "description_contact_uz": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter description"}
@@ -424,7 +583,11 @@ class CommonInfoForm(ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter description"}
             ),
             "logo": FileInput(
-                attrs={"class": "form-control", "placeholder": "Enter image"}
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter image",
+                }
             ),
             "phone": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter phone"}
@@ -454,7 +617,102 @@ class CommonInfoForm(ModelForm):
 class CollectionBookForm(ModelForm):
     class Meta:
         model = CollectionBook
-        fields = '__all__'
+        fields = [
+            "title_uz",
+            "title_ru",
+            "title_en",
+            "description_uz",
+            "description_ru",
+            "description_en",
+            "body_uz",
+            "body_ru",
+            "body_en",
+            "price",
+            "image",
+            "status",
+            "special_status",
+        ]
+
+        labels = {
+            "title_uz": " 🇺🇿 Collection Book nomi o`zbek tilida 🔴",
+            "title_ru": " 🇷🇺 Collection Book nomi rus tilida",
+            "title_en": " 🇺🇸 Collection Book nomi ingliz tilida",
+            "description_uz": " 🇺🇿 Collection Book qisqacha malumot o`zbek tilida 🔴",
+            "description_ru": " 🇷🇺 Collection Book qisqacha malumot rus tilida",
+            "description_en": " 🇺🇸 Collection Book qisqacha malumot ingliz tilida",
+            "body_uz": " 🇺🇿 Collection Book toliq malumot ingliz tilida 🔴",
+            "body_ru": " 🇷🇺 Collection Book toliq malumot ingliz tilida",
+            "body_en": " 🇺🇸 Collection Book toliq malumot ingliz tilida",
+            "price": "Collection Book Narxi 🔴",
+            "image": "Collection Book rasmi 🔴",
+            "status": "Collection Book mavjudligi",
+            "special_status": "Maqsus toplammi ?",
+        }
+        widgets = {
+            "title_uz": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter title",
+                }
+            ),
+            "title_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "title_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter title"}
+            ),
+            "description_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description_uz"}
+            ),
+            "description_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description_ru"}
+            ),
+            "description_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter description_en"}
+            ),
+            "body_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter body_uz"}
+            ),
+            "body_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter body_ru"}
+            ),
+            "body_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter body_en"}
+            ),
+            "price": NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Enter price",
+                }
+            ),
+            "image": FileInput(
+                attrs={
+                    "class": "form-control",
+                    "required": True,
+                    "placeholder": "Images",
+                }
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+            "special_status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ============================= COLLECTION SLIDER ============================ #
+
+
+class CollectionSliderForm(ModelForm):
+    class Meta:
+        model = CollectionSlider
+        fields = ["collection", "image"]
+
+        widgets = {
+            "collection": forms.Select(attrs={"class": "form-control"}),
+            "image": FileInput(
+                attrs={"class": "form-control", "placeholder": "Enter image"}
+            ),
+        }
 
 
 # ==================================== FAQ =================================== #
@@ -471,6 +729,125 @@ class FaqForm(ModelForm):
             ),
             "answer": TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter answer"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# =================================== ABOUT ================================== #
+
+
+class AboutForm(ModelForm):
+    class Meta:
+        model = About
+        fields = ["detail_uz", "detail_ru", "detail_en", "status"]
+
+        labels = {
+            "detail_uz": "Biz haqqimizda malumot o`zbek tilida",
+            "detail_ru": "Biz haqqimizda malumot rus tilida",
+            "detail_en": "Biz haqqimizda malumot ingliz tilida",
+        }
+
+        widgets = {
+            "detail_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ============================================================================ #
+
+
+# ================================= SHIPPING ================================= #
+
+
+class ShippingInfoForm(ModelForm):
+    class Meta:
+        model = ShippingInfo
+        fields = ["detail_uz", "detail_ru", "detail_en", "status"]
+
+        labels = {
+            "detail_uz": "Etkazip berish xizmatlari haqqida o`zbek tilida",
+            "detail_ru": "Etkazip berish xizmatlari haqqida rus tilida",
+            "detail_en": "Etkazip berish xizmatlari haqqida ingliz tilida",
+        }
+
+        widgets = {
+            "detail_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ============================================================================ #
+
+# ================================ PAYMENTINFO =============================== #
+
+
+class PaymentInfoForm(ModelForm):
+    class Meta:
+        model = PaymentInfo
+        fields = ["detail_uz", "detail_ru", "detail_en", "status"]
+
+        labels = {
+            "detail_uz": "Tolov tizimi  haqqida o`zbek tilida",
+            "detail_ru": "Tolov tizimi haqqida rus tilida",
+            "detail_en": "Tolov tizimi haqqida ingliz tilida",
+        }
+
+        widgets = {
+            "detail_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "status": forms.Select(attrs={"class": "form-select"}),
+        }
+
+
+# ============================================================================ #
+
+# =============================== DISCOUNTINFO =============================== #
+
+
+class DiscountInfoForm(ModelForm):
+    class Meta:
+        model = DiscountInfo
+        fields = ["detail_uz", "detail_ru", "detail_en", "status"]
+
+        labels = {
+            "detail_uz": "Chegirmalar  haqqida o`zbek tilida",
+            "detail_ru": "Chegirmalar haqqida rus tilida",
+            "detail_en": "Chegirmalar haqqida ingliz tilida",
+        }
+
+        widgets = {
+            "detail_uz": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_ru": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
+            ),
+            "detail_en": TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter detail"}
             ),
             "status": forms.Select(attrs={"class": "form-select"}),
         }

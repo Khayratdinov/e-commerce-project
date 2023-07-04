@@ -16,25 +16,23 @@ from project.apps.core.utils import paginate_queryset
 
 def blog_list(request):
     blog_list = Blog.objects.filter(status="True").order_by("-created_at")
-    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
 
     blog_list = paginate_queryset(request, blog_list)
 
     context = {
         "blog_list": blog_list,
-        "bradcaump_img": bradcaump_img,
     }
     return render(request, "blog/blog_list.html", context)
 
 
 def blog_detail(request, slug):
-    bradcaump_img = HeadImages.objects.filter(status=True).order_by("?")[:1]
     blog_detail = get_object_or_404(Blog, slug=slug)
     blog_detail.views += 1
     blog_detail.save()
+    blog_comment = BlogComment.objects.filter(blog=blog_detail)
     context = {
         "blog_detail": blog_detail,
-        "bradcaump_img": bradcaump_img,
+        "blog_comment": blog_comment,
     }
     return render(request, "blog/blog_detail.html", context)
 
@@ -43,7 +41,6 @@ def blog_detail(request, slug):
 
 
 def category_blog_detail(request, slug):
-    headImages = HeadImages.objects.filter(status=True).order_by("?")[:1]
     blog_category = get_object_or_404(CategoryBlog, slug=slug)
     blog_list = Blog.objects.filter(category=blog_category, status="True").order_by(
         "-created_at"
@@ -53,7 +50,6 @@ def category_blog_detail(request, slug):
     context = {
         "blog_category": blog_category,
         "blog_list": blog_list,
-        "bradcaump_img": headImages,
     }
     return render(request, "blog/blog_list_by_category.html", context)
 

@@ -12,7 +12,6 @@ from project.apps.book.models import Book
 
 class Cart(object):
     def __init__(self, request):
-
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
@@ -22,7 +21,10 @@ class Cart(object):
     def add(self, book, quantity=1, update_quantity=False):
         book_id = str(book.id)
         if book_id not in self.cart:
-            self.cart[book_id] = {"quantity": 0, "price": str(book.price)}
+            self.cart[book_id] = {
+                "quantity": 0,
+                "price": str(book.get_discount_price),
+            }
         if update_quantity:
             self.cart[book_id]["quantity"] = quantity
         else:
@@ -57,6 +59,9 @@ class Cart(object):
         return sum(
             Decimal(item["price"]) * item["quantity"] for item in self.cart.values()
         )
+
+    def count_items(self):
+        return sum(item["quantity"] for item in self.cart.values())
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]

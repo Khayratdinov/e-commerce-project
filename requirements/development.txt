@@ -1,10 +1,4 @@
-django
-django-environ
-pillow
-django-ckeditor
-django-imagekit
-django-modeltranslation
-psycopg2-binary
-
-python-slugify
+-r base.txt
+# Add development-specific packages
 django-debug-toolbar
+black

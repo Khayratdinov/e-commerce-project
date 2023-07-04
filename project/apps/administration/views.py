@@ -1,5 +1,6 @@
 import math
 import datetime
+import random
 
 # ============================================================================ #
 from django.http import HttpResponseRedirect
@@ -10,6 +11,8 @@ from django.contrib.admin.views.decorators import user_passes_test
 from django.db.models import Avg, Sum
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.db import transaction
+
 
 # ============================================================================ #
 from project.apps.book.models import (
@@ -19,6 +22,7 @@ from project.apps.book.models import (
     Tag,
     BookComment,
     CollectionBook,
+    CollectionSlider,
 )
 from project.apps.common.models import (
     HomeSlider,
@@ -26,6 +30,10 @@ from project.apps.common.models import (
     CommonInfo,
     ContactMessage,
     FAQ,
+    About,
+    ShippingInfo,
+    PaymentInfo,
+    DiscountInfo,
 )
 from project.apps.order.models import Order, Shipping, OrderLineItem
 from project.apps.blog.models import CategoryBlog, Blog
@@ -45,7 +53,12 @@ from project.apps.administration.forms import (
     RandomBradcaumpImgForm,
     CommonInfoForm,
     CollectionBookForm,
+    CollectionSliderForm,
     FaqForm,
+    AboutForm,
+    ShippingInfoForm,
+    PaymentInfoForm,
+    DiscountInfoForm,
 )
 
 User = get_user_model()
@@ -77,6 +90,26 @@ def seller_required(view_func):
     return decorated_view_func
 
 
+# ============================================================================ #
+#                                   PAGINATOR                                  #
+# ============================================================================ #
+
+
+def paginate_queryset_admin(
+    request, queryset, per_page=12, page_kwarg="page", order_by="-created_at"
+):
+    ordered_queryset = queryset.order_by(order_by)
+    paginator = Paginator(ordered_queryset, per_page)
+    page = request.GET.get(page_kwarg)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+    return page_obj
+
+
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 #                                ADMIN DASHBOARD                               #
 # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
@@ -84,25 +117,12 @@ def seller_required(view_func):
 
 @seller_required
 def index(request):
-
-    all_orders_count = Order.objects.filter(is_paid=True).count()
-
-    total_sum_all_orders = (
-        Order.objects.filter(is_paid=True).aggregate(Sum("total")).get("total__sum")
+    new_orders = Order.objects.filter(is_paid=True, status="New").order_by(
+        "-created_at"
     )
-
-    all_users_count = User.objects.all().count()
-
-    all_books_count = Book.objects.all().count()
-
-    all_offline_sales_count = Order.objects.filter(offline_sales=True).count()
-
-    all_online_sales_count = Order.objects.filter(offline_sales=False).count()
-
-    new_orders = Order.objects.filter(is_paid=True, status="New")
     new_orders_count = new_orders.count()
 
-    new_messages = ContactMessage.objects.filter(status="False")
+    new_messages = ContactMessage.objects.filter(status="False").order_by("-created_at")
     new_messages_count = new_messages.count()
 
     today_comments = BookComment.objects.filter(
@@ -135,15 +155,9 @@ def index(request):
         total_sum_online += order.total
 
     context = {
-        "all_orders_count": all_orders_count,
-        "all_offline_sales_count": all_offline_sales_count,
-        "all_online_sales_count": all_online_sales_count,
-        "total_sum_all_orders": total_sum_all_orders,
-        "all_users_count": all_users_count,
-        "all_books_count": all_books_count,
         "new_orders_count": new_orders_count,
-        "new_orders": new_orders,
         "new_messages": new_messages,
+        "new_orders": new_orders,
         "new_messages_count": new_messages_count,
         "today_comments": today_comments,
         "today_orders_count": today_orders_count,
@@ -163,7 +177,6 @@ def index(request):
 
 @seller_required
 def general_dashboard(request):
-
     all_orders_count = Order.objects.filter(is_paid=True).count()
 
     total_sum_all_orders = (
@@ -224,7 +237,6 @@ def general_dashboard(request):
 
 @seller_required
 def weekly_dashboard(request):
-
     users_week = User.objects.filter(
         date_joined__week=datetime.date.today().isocalendar()[1]
     ).count()
@@ -254,7 +266,6 @@ def weekly_dashboard(request):
     # ====================== UMIMIY BUYIRTMALARNING DAROMATI ===================== #
     total_price_week = 0
     for order in orders_week:
-
         total_price_week += order.total
 
     # ========================= OTKAN HAFTA BUYIRTMALARI ========================= #
@@ -321,7 +332,8 @@ def weekly_dashboard(request):
 
     best_seller_books = (
         OrderLineItem.objects.filter(
-            order__created_at__week=datetime.date.today().isocalendar()[1]
+            collection_order_status=False,
+            order__created_at__week=datetime.date.today().isocalendar()[1],
         )
         .values("product")
         .annotate(total=Sum("quantity"))
@@ -402,7 +414,6 @@ def weekly_dashboard(request):
 
 @seller_required
 def monthly_dashboard(request):
-
     # ======================== SHU OYNING YANGI MIJOZLARI ======================== #
 
     users_month = User.objects.filter(
@@ -487,7 +498,8 @@ def monthly_dashboard(request):
 
     best_seller_books = (
         OrderLineItem.objects.filter(
-            order__created_at__month=datetime.date.today().month
+            collection_order_status=False,
+            order__created_at__month=datetime.date.today().month,
         )
         .values("product")
         .annotate(total=Sum("quantity"))
@@ -562,7 +574,6 @@ def monthly_dashboard(request):
 
 @seller_required
 def yearly_dashboard(request):
-
     # =========================== SHU YILNING MIJOZLARI ========================== #
 
     users_year = User.objects.filter(
@@ -604,7 +615,10 @@ def yearly_dashboard(request):
     # ========================= KOP SOTILGAN TOP 10 KITOB ======================== #
 
     best_seller_books = (
-        OrderLineItem.objects.filter(order__created_at__year=datetime.date.today().year)
+        OrderLineItem.objects.filter(
+            collection_order_status=False,
+            order__created_at__year=datetime.date.today().year,
+        )
         .values("product")
         .annotate(total=Sum("quantity"))
         .order_by("-total")[:10]
@@ -671,14 +685,7 @@ def yearly_dashboard(request):
 @seller_required
 def category_admin(request):
     categories = Category.objects.all()
-    paginator = Paginator(categories, 10)
-    page = request.GET.get("page")
-    try:
-        categories = paginator.page(page)
-    except PageNotAnInteger:
-        categories = paginator.page(1)
-    except EmptyPage:
-        categories = paginator.page(paginator.num_pages)
+    categories = paginate_queryset_admin(request, categories)
     context = {"categories": categories}
     return render(request, "administration/category/category_admin.html", context)
 
@@ -688,9 +695,6 @@ def category_admin(request):
 
 @admin_required
 def category_create(request):
-
-    print("HELOO", request.POST)
-
     form = CategoryForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():
@@ -708,7 +712,6 @@ def category_create(request):
 
 @admin_required
 def category_edit(request, pk):
-
     category = get_object_or_404(Category, pk=pk)
     form = CategoryForm(request.POST or None, request.FILES or None, instance=category)
 
@@ -740,30 +743,24 @@ def category_delete(request, pk):
 
 @seller_required
 def book_admin(request):
+    keyword = request.POST.get("keyword", "")
+    category_select = request.POST.get("category_select", "all")
 
-    if request.method == "POST":
-        keyword = request.POST["keyword"]
-        category_select = request.POST["category_select"]
-        if category_select == "all":
-            books = Book.objects.filter(title__icontains=keyword)
-        else:
-            books = Book.objects.filter(
-                title__icontains=keyword, category__title=category_select
-            )
+    books = Book.objects.all()
 
-    else:
-        books = Book.objects.all()
+    if keyword:
+        books = books.filter(title__icontains=keyword)
+        if category_select != "all":
+            books = books.filter(category__title=category_select)
 
     categories = Category.objects.values_list("title", flat=True).distinct()
-    paginator = Paginator(books, 10)
-    page = request.GET.get("page")
-    try:
-        books = paginator.page(page)
-    except PageNotAnInteger:
-        books = paginator.page(1)
-    except EmptyPage:
-        books = paginator.page(paginator.num_pages)
-    context = {"books": books, "categories": categories}
+    books = paginate_queryset_admin(request, books)
+    context = {
+        "books": books,
+        "categories": categories,
+        "keyword": keyword,
+        "category_select": category_select,
+    }
     return render(request, "administration/book/book_admin.html", context)
 
 
@@ -774,7 +771,7 @@ def book_admin(request):
 def book_create(request):
     book = Book()
 
-    bookInlineFormset = inlineformset_factory(
+    BookInlineFormset = inlineformset_factory(
         Book,
         BookSlider,
         form=BookSliderForm,
@@ -789,29 +786,27 @@ def book_create(request):
     )
 
     if request.method == "POST":
-
-        formset = bookInlineFormset(
+        formset = BookInlineFormset(
             request.POST or None, request.FILES or None, instance=book, prefix="images"
         )
-
         form = BookForm(
             request.POST or None, request.FILES or None, instance=book, prefix="book"
         )
+        form.fields["coverpage"].widget.attrs["required"] = True
 
         if form.is_valid() and formset.is_valid():
-            form = form.save(commit=False)
+            with transaction.atomic():
+                book = form.save(commit=False)
+                book.save()
+                form.save_m2m()
 
-            book.save()
-            tags_list = request.POST.getlist("book-tags")
-            tags = Tag.objects.filter(id__in=tags_list)
-            book.tags.set(tags)
-            for category in request.POST.getlist("book-category"):
-                book.category.add(category)
-            formset.save()
+                formset.instance = book
+                formset.save()
+
             messages.success(request, "Malumotlaringiz saqlandi")
             return redirect("book_admin")
     else:
-        formset = bookInlineFormset(instance=book, prefix="images")
+        formset = BookInlineFormset(instance=book, prefix="images")
         form = BookForm(instance=book, prefix="book")
     context = {"form": form, "formset": formset}
     return render(request, "administration/book/book_create.html", context)
@@ -820,57 +815,71 @@ def book_create(request):
 # ============================================================================ #
 
 
+BookSliderFormset = inlineformset_factory(
+    Book,
+    BookSlider,
+    fields=("book", "image"),
+    extra=2,
+    can_delete=True,
+    min_num=1,
+    validate_min=True,
+)
+
+
 @admin_required
 def book_edit(request, pk):
     book = get_object_or_404(Book, pk=pk)
+    book_form_prefix = "book"
+    images_form_prefix = "images"
 
-    bookInlineFormset = inlineformset_factory(
-        Book,
-        BookSlider,
-        form=BookSliderForm,
-        fields=(
-            "book",
-            "image",
-        ),
-        extra=2,
-        can_delete=True,
-        min_num=1,
-        validate_min=True,
-    )
     if request.method == "POST":
-        formset = bookInlineFormset(
-            request.POST or None, request.FILES or None, instance=book, prefix="images"
-        )
-
         form = BookForm(
-            request.POST or None, request.FILES or None, instance=book, prefix="book"
+            request.POST or None,
+            request.FILES or None,
+            instance=book,
+            prefix=book_form_prefix,
+        )
+        formset = BookSliderFormset(
+            request.POST or None,
+            request.FILES or None,
+            instance=book,
+            prefix=images_form_prefix,
+            queryset=BookSlider.objects.filter(book=book),
         )
 
-        book.category.clear()
-        for category in request.POST.getlist("book-category"):
-            book.category.add(category)
-
-        tags_list = request.POST.getlist("book-tags")
-        tags = Tag.objects.filter(id__in=tags_list)
-        book.tags.set(tags)
         if form.is_valid() and formset.is_valid():
-            form = form.save(commit=False)
-            form.save()
-            formset.save()
-            messages.success(request, "Malumotlaringiz yangilandi")
-            return redirect("book_admin")
+            with transaction.atomic():
+                form = form.save(commit=False)
+                form.save()
+                formset.save()
 
-        else:
+                book.category.set(request.POST.getlist("book-category"))
+                book.tags.set(
+                    Tag.objects.filter(id__in=request.POST.getlist("book-tags"))
+                )
+                book.collection_book.set(
+                    CollectionBook.objects.filter(
+                        id__in=request.POST.getlist("book-collection_book")
+                    )
+                )
 
-            print("Forms: ", form.errors)
-            print("Formset: ", formset.errors)
+                messages.success(request, "Malumotlaringiz yangilandi")
+                return redirect("book_admin")
     else:
-        formset = bookInlineFormset(instance=book, prefix="images")
-        form = BookForm(instance=book, prefix="book")
+        form = BookForm(instance=book, prefix=book_form_prefix)
+        formset = BookSliderFormset(
+            instance=book,
+            prefix=images_form_prefix,
+            queryset=BookSlider.objects.filter(book=book),
+        )
+
+    form.fields["coverpage"].widget.attrs["required"] = False
+
     context = {
         "form": form,
         "formset": formset,
     }
+
     return render(request, "administration/book/book_edit.html", context)
 
 
@@ -893,14 +902,7 @@ def book_delete(request, pk):
 @seller_required
 def tag_book_admin(request):
     tags = Tag.objects.all()
-    paginator = Paginator(tags, 10)
-    page = request.GET.get("page")
-    try:
-        tags = paginator.page(page)
-    except PageNotAnInteger:
-        tags = paginator.page(1)
-    except EmptyPage:
-        tags = paginator.page(paginator.num_pages)
+    tags = paginate_queryset_admin(request, tags)
     context = {"tags": tags}
     return render(request, "administration/tag_book/tag_book_admin.html", context)
 
@@ -1006,18 +1008,16 @@ def book_comment_edit(request, pk):
 
 @admin_required
 def book_comment_delete(request, pk):
-    book_comment = BookComment.objects.get(pk=pk)
-    book = Book.objects.get(pk=book_comment.book.id)
+    book_comment = get_object_or_404(BookComment, pk=pk)
+    book = book_comment.book
     book_comment.delete()
+
     reviews = BookComment.objects.filter(book=book, status="True").aggregate(
         avarage=Avg("rate")
     )
-    if reviews["avarage"] is None:
-        book.rating = 0
-        book.save()
-    else:
 
-        book.rating = math.ceil((reviews["avarage"]))
+    book.rating = 0 if reviews["avarage"] is None else math.ceil((reviews["avarage"]))
+    book.count_comment -= 1
     book.save()
     messages.success(request, "Savollar o'chirildi")
     return redirect("book_comment_admin")
@@ -1031,14 +1031,7 @@ def book_comment_delete(request, pk):
 @seller_required
 def home_slider_admin(request):
     home_sliders = HomeSlider.objects.all()
-    paginator = Paginator(home_sliders, 10)
-    page = request.GET.get("page")
-    try:
-        home_sliders = paginator.page(page)
-    except PageNotAnInteger:
-        home_sliders = paginator.page(1)
-    except EmptyPage:
-        home_sliders = paginator.page(paginator.num_pages)
+    home_sliders = paginate_queryset_admin(request, home_sliders)
     context = {"home_sliders": home_sliders}
     return render(request, "administration/home_slider/home_slider_admin.html", context)
 
@@ -1048,7 +1041,6 @@ def home_slider_admin(request):
 
 @admin_required
 def home_slider_create(request):
-
     form = HomeSliderForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():
@@ -1101,48 +1093,43 @@ def home_slider_delete(request, pk):
 
 @seller_required
 def order_list(request):
+    # orders order by created date
+    orders = Order.objects.filter(is_paid=True)
 
     if request.method == "POST":
-        order_id = request.POST["order_code"]
-        customer = request.POST["name"]
-        order_status = request.POST["status"]
-        price_from = request.POST["price_from"]
-        price_to = request.POST["price_to"]
-        created_date = request.POST["created_date"]
-        updated_date = request.POST["updated_date"]
+        order_id = request.POST.get("order_code")
+        customer = request.POST.get("name")
+        order_status = request.POST.get("status")
+        price_from = request.POST.get("price_from")
+        price_to = request.POST.get("price_to")
+        created_date = request.POST.get("created_date")
+        updated_date = request.POST.get("updated_date")
 
         if order_id:
-            orders = Order.objects.filter(id=order_id, is_paid=True)
-        else:
-            orders = Order.objects.filter(is_paid=True)
+            orders = orders.filter(order_code=order_id)
 
         if customer:
-            orders = orders.filter(user__username__icontains=customer)
+            orders = orders.filter(full_name__icontains=customer)
+
         if order_status:
             orders = orders.filter(status=order_status)
+
         if price_from:
             orders = orders.filter(total__gte=price_from)
+
         if price_to:
             orders = orders.filter(total__lte=price_to)
+
         if created_date:
             orders = orders.filter(created_at__icontains=created_date)
+
         if updated_date:
             orders = orders.filter(updated_at__icontains=updated_date)
 
-    else:
-        orders = Order.objects.filter(is_paid=True)
-
-    paginator = Paginator(orders, 10)
-    page = request.GET.get("page")
-    try:
-        orders = paginator.page(page)
-    except PageNotAnInteger:
-        orders = paginator.page(1)
-    except EmptyPage:
-        orders = paginator.page(paginator.num_pages)
+    order_list = paginate_queryset_admin(request, orders)
 
     context = {
-        "orders": orders,
+        "orders": order_list,
     }
 
     return render(request, "administration/order/order_list.html", context)
@@ -1162,7 +1149,6 @@ def order_detail(request, id):
         return redirect(url)
     else:
         order = Order.objects.get(pk=id)
-        print(order.shipping)
         context = {"order": order}
         return render(request, "administration/order/order_detail.html", context)
 
@@ -1233,27 +1219,19 @@ def shipping_delete(request, pk):
 
 @seller_required
 def user_admin(request):
-
     if request.method == "POST":
         keyword = request.POST["keyword"]
         users = User.objects.filter(
             username__icontains=keyword,
             first_name__icontains=keyword,
             last_name__icontains=keyword,
-        )
+        ).order_by("-date_joined")
 
     else:
         keyword = {}
-        users = User.objects.all()
+        users = User.objects.all().order_by("-date_joined")
 
-    paginator = Paginator(users, 10)
-    page = request.GET.get("page")
-    try:
-        users = paginator.page(page)
-    except PageNotAnInteger:
-        users = paginator.page(1)
-    except EmptyPage:
-        users = paginator.page(paginator.num_pages)
+    users = paginate_queryset_admin(request, users, order_by="-date_joined")
     context = {
         "users": users,
         "keyword": keyword,
@@ -1267,6 +1245,7 @@ def user_admin(request):
 @admin_required
 def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
+
     context = {
         "user": user,
     }
@@ -1276,9 +1255,11 @@ def user_detail(request, pk):
 # ============================================================================ #
 
 
+# ============================================================================ #
+
+
 @admin_required
 def user_edit(request, pk):
-
     user = get_object_or_404(User, pk=pk)
     form = UserEditForm(request.POST or None, instance=user)
     if form.is_valid():
@@ -1348,6 +1329,35 @@ def shopcart(request):
     return render(request, "administration/order/shopCart_admin.html", context)
 
 
+def order_create_admin(request):
+    admin = request.user
+    shopcart_admin = ShopCart.objects.all()
+    total_price = 0
+    for shopcart in shopcart_admin:
+        total_price += shopcart.product.price * shopcart.quantity
+    code = random.randint(10000000, 99999999)
+    order = Order.objects.create(
+        user=admin,
+        order_code=code,
+        full_name="Hamrohbooks admin",
+        total=total_price,
+        offline_sales=True,
+        is_paid=True,
+    )
+    order.save()
+
+    for shopcart in shopcart_admin:
+        orderproduct = OrderLineItem.objects.create(
+            order=order,
+            product=shopcart.product,
+            quantity=shopcart.quantity,
+        )
+        orderproduct.save()
+        shopcart.delete()
+    messages.success(request, "Buyirtma muaffaqiyatli qoshildi")
+    return redirect("dashboard")
+
+
 @seller_required
 def delete_from_cart(request, id):
     url = request.META.get("HTTP_REFERER")
@@ -1363,7 +1373,6 @@ def delete_from_cart(request, id):
 
 @seller_required
 def order_dashboard(request):
-
     if request.method == "POST":
         keyword = request.POST["keyword"]
         category_select = request.POST["category_select"]
@@ -1379,14 +1388,7 @@ def order_dashboard(request):
         books = Book.objects.all()
 
     categories = Category.objects.values_list("title", flat=True).distinct()
-    paginator = Paginator(books, 10)
-    page = request.GET.get("page")
-    try:
-        books = paginator.page(page)
-    except PageNotAnInteger:
-        books = paginator.page(1)
-    except EmptyPage:
-        books = paginator.page(paginator.num_pages)
+    books = paginate_queryset_admin(request, books)
     context = {"books": books, "categories": categories}
     return render(request, "administration/order/order_dashboard.html", context)
 
@@ -1399,14 +1401,7 @@ def order_dashboard(request):
 @seller_required
 def category_blog_admin(request):
     categories = CategoryBlog.objects.all()
-    paginator = Paginator(categories, 10)
-    page = request.GET.get("page")
-    try:
-        categories = paginator.page(page)
-    except PageNotAnInteger:
-        categories = paginator.page(1)
-    except EmptyPage:
-        categories = paginator.page(paginator.num_pages)
+    categories = paginate_queryset_admin(request, categories)
     context = {"categories": categories}
     return render(
         request, "administration/category_blog/category_blog_admin.html", context
@@ -1474,14 +1469,7 @@ def category_blog_delete(request, pk):
 @seller_required
 def blog_admin(request):
     blogs = Blog.objects.all()
-    paginator = Paginator(blogs, 10)
-    page = request.GET.get("page")
-    try:
-        blogs = paginator.page(page)
-    except PageNotAnInteger:
-        blogs = paginator.page(1)
-    except EmptyPage:
-        blogs = paginator.page(paginator.num_pages)
+    blogs = paginate_queryset_admin(request, blogs)
     context = {"blogs": blogs}
     return render(request, "administration/blog/blog_admin.html", context)
 
@@ -1543,14 +1531,7 @@ def blog_delete(request, pk):
 @seller_required
 def random_image_admin(request):
     images = HeadImages.objects.all()
-    paginator = Paginator(images, 10)
-    page = request.GET.get("page")
-    try:
-        images = paginator.page(page)
-    except PageNotAnInteger:
-        images = paginator.page(1)
-    except EmptyPage:
-        images = paginator.page(paginator.num_pages)
+    images = paginate_queryset_admin(request, images)
     context = {"images": images}
     return render(
         request, "administration/random_image/random_image_admin.html", context
@@ -1681,16 +1662,8 @@ def setting_site_delete(request, pk):
 
 @seller_required
 def contact_message_admin(request):
-
     contact_messages = ContactMessage.objects.all()
-    paginator = Paginator(contact_messages, 10)
-    page = request.GET.get("page")
-    try:
-        contact_messages = paginator.page(page)
-    except PageNotAnInteger:
-        contact_messages = paginator.page(1)
-    except EmptyPage:
-        contact_messages = paginator.page(paginator.num_pages)
+    contact_messages = paginate_queryset_admin(request, contact_messages)
 
     context = {
         "contact_messages": contact_messages,
@@ -1737,9 +1710,20 @@ def contact_message_delete(request, pk):
 # ============================================================================ #
 
 
+CollectionFormset = inlineformset_factory(
+    CollectionBook,
+    CollectionSlider,
+    fields=("collection", "image"),
+    extra=2,
+    can_delete=True,
+    min_num=1,
+    validate_min=True,
+)
+
+
 @seller_required
 def collection_book_admin(request):
-    collections = CollectionBook.objects.filter(status="True")
+    collections = CollectionBook.objects.all()
 
     context = {"collections": collections}
     return render(request, "administration/collections/collections_admin.html", context)
@@ -1750,15 +1734,32 @@ def collection_book_admin(request):
 
 @seller_required
 def collection_book_create(request):
+    collection = CollectionBook()
+
     if request.method == "POST":
-        form = CollectionBookForm(request.POST or None, request.FILES or None)
-        if form.is_valid():
-            form.save()
+        formset = CollectionFormset(
+            request.POST or None,
+            request.FILES or None,
+            instance=collection,
+            prefix="images",
+        )
+        form = CollectionBookForm(
+            request.POST or None,
+            request.FILES or None,
+            instance=collection,
+            prefix="collection",
+        )
+        if form.is_valid() and formset.is_valid():
+            with transaction.atomic():
+                form = form.save(commit=False)
+                form.save()
+                formset.save()
             messages.success(request, "Malumotlar qoshildi")
             return redirect("collection_book_admin")
     else:
-        form = CollectionBookForm()
-    context = {"form": form}
+        formset = CollectionFormset(instance=collection, prefix="images")
+        form = CollectionBookForm(instance=collection, prefix="collection")
+    context = {"form": form, "formset": formset}
     return render(
         request, "administration/collections/collections_create.html", context
     )
@@ -1772,15 +1773,37 @@ def collection_edit(request, pk):
     collection = CollectionBook.objects.get(pk=pk)
     if request.method == "POST":
         form = CollectionBookForm(
-            request.POST or None, request.FILES or None, instance=collection
+            request.POST or None,
+            request.FILES or None,
+            instance=collection,
+            prefix="collection",
         )
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Malumotlar yangilandi")
-            return redirect("collection_book_admin")
+        formset = CollectionFormset(
+            request.POST or None,
+            request.FILES or None,
+            instance=collection,
+            prefix="images",
+            queryset=CollectionSlider.objects.filter(collection=collection),
+        )
+
+        if form.is_valid() and formset.is_valid():
+            with transaction.atomic():
+                form = form.save(commit=False)
+                form.save()
+                formset.save()
+                messages.success(request, "Malumotlaringiz yangilandi")
+                return redirect("collection_book_admin")
     else:
-        form = CollectionBookForm(instance=collection)
-    context = {"form": form, "collection": collection}
+        form = CollectionBookForm(instance=collection, prefix="collection")
+        formset = CollectionFormset(
+            instance=collection,
+            prefix="images",
+            queryset=CollectionSlider.objects.filter(collection=collection),
+        )
+
+    form.fields["image"].widget.attrs["required"] = False
+
+    context = {"form": form, "formset": formset, "collection": collection}
     return render(request, "administration/collections/collections_edit.html", context)
 
 
@@ -1855,3 +1878,237 @@ def faq_delete(request, pk):
     faq.delete()
     messages.success(request, "Savollar o'chirildi")
     return redirect("faq_admin")
+
+
+# ============================================================================ #
+
+
+@seller_required
+def about_admin(request):
+    about_list = About.objects.all()
+
+    context = {"about_list": about_list}
+    return render(request, "administration/about/about_admin.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def about_create(request):
+    if request.method == "POST":
+        form = AboutForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("about_admin")
+    else:
+        form = AboutForm()
+    context = {"form": form}
+    return render(request, "administration/about/about_create.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def about_edit(request, pk):
+    about = About.objects.get(pk=pk)
+    if request.method == "POST":
+        form = AboutForm(request.POST, instance=about)
+        if form.is_valid():
+            form.save()
+            return redirect("about_admin")
+    else:
+        form = AboutForm(instance=about)
+    context = {"form": form, "about": about}
+    return render(request, "administration/about/about_edit.html", context)
+
+
+# ============================================================================ #
+
+
+@seller_required
+def about_delete(request, pk):
+    about = About.objects.get(pk=pk)
+    about.delete()
+    return redirect("about_admin")
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_info_admin(request):
+    shipping_info_list = ShippingInfo.objects.all()
+
+    context = {"shipping_info_list": shipping_info_list}
+    return render(
+        request, "administration/shipping_info/shipping_info_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_info_create(request):
+    if request.method == "POST":
+        form = ShippingInfoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("shipping_info_admin")
+    else:
+        form = ShippingInfoForm()
+    context = {"form": form}
+    return render(
+        request, "administration/shipping_info/shipping_info_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_info_edit(request, pk):
+    shipping_info = ShippingInfo.objects.get(pk=pk)
+    if request.method == "POST":
+        form = ShippingInfoForm(request.POST, instance=shipping_info)
+        if form.is_valid():
+            form.save()
+            return redirect("shipping_info_admin")
+    else:
+        form = ShippingInfoForm(instance=shipping_info)
+    context = {"form": form, "shipping_info": shipping_info}
+    return render(
+        request, "administration/shipping_info/shipping_info_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def shipping_info_delete(request, pk):
+    shipping_info = ShippingInfo.objects.get(pk=pk)
+    shipping_info.delete()
+    return redirect("shipping_info_admin")
+
+
+# ============================================================================ #
+
+
+@seller_required
+def payment_info_admin(request):
+    payment_info_list = PaymentInfo.objects.all()
+
+    context = {"payment_info_list": payment_info_list}
+    return render(
+        request, "administration/payment_info/payment_info_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def payment_info_create(request):
+    if request.method == "POST":
+        form = PaymentInfoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("payment_info_admin")
+    else:
+        form = PaymentInfoForm()
+    context = {"form": form}
+    return render(
+        request, "administration/payment_info/payment_info_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def payment_info_edit(request, pk):
+    payment_info = PaymentInfo.objects.get(pk=pk)
+    if request.method == "POST":
+        form = PaymentInfoForm(request.POST, instance=payment_info)
+        if form.is_valid():
+            form.save()
+            return redirect("payment_info_admin")
+    else:
+        form = PaymentInfoForm(instance=payment_info)
+    context = {"form": form, "payment_info": payment_info}
+    return render(
+        request, "administration/payment_info/payment_info_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def payment_info_delete(request, pk):
+    payment_info = PaymentInfo.objects.get(pk=pk)
+    payment_info.delete()
+    return redirect("payment_info_admin")
+
+
+# ============================================================================ #
+
+
+@seller_required
+def discount_info_admin(request):
+    discount_info_list = DiscountInfo.objects.all()
+
+    context = {"discount_info_list": discount_info_list}
+    return render(
+        request, "administration/discount_info/discount_info_admin.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def discount_info_create(request):
+    if request.method == "POST":
+        form = DiscountInfoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("discount_info_admin")
+    else:
+        form = DiscountInfoForm()
+    context = {"form": form}
+    return render(
+        request, "administration/discount_info/discount_info_create.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def discount_info_edit(request, pk):
+    discount_info = DiscountInfo.objects.get(pk=pk)
+    if request.method == "POST":
+        form = DiscountInfoForm(request.POST, instance=discount_info)
+        if form.is_valid():
+            form.save()
+            return redirect("discount_info_admin")
+    else:
+        form = DiscountInfoForm(instance=discount_info)
+    context = {"form": form, "discount_info": discount_info}
+    return render(
+        request, "administration/discount_info/discount_info_edit.html", context
+    )
+
+
+# ============================================================================ #
+
+
+@seller_required
+def discount_info_delete(request, pk):
+    discount_info = DiscountInfo.objects.get(pk=pk)
+    discount_info.delete()
+    return redirect("discount_info_admin")

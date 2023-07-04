@@ -9,7 +9,7 @@ urlpatterns = [
     path("general_dashboard/", views.general_dashboard, name="general_dashboard"),
     path("weekly_dashboard/", views.weekly_dashboard, name="weekly_dashboard"),
     path("monthly_dashboard/", views.monthly_dashboard, name="monthly_dashboard"),
-    path('yearly_dashboard/', views.yearly_dashboard, name='yearly_dashboard'),
+    path("yearly_dashboard/", views.yearly_dashboard, name="yearly_dashboard"),
     # ================================= CATEGORY ================================= #
     path("category_admin/", views.category_admin, name="category_admin"),
     path("category_create/", views.category_create, name="category_create"),
@@ -52,7 +52,7 @@ urlpatterns = [
     # =================================== ORDER ================================== #
     path("order_dashboard/", views.order_dashboard, name="order_dashboard"),
     path("order_list/", views.order_list, name="order_list"),
-    path("order_detail/<int:id>/", views.order_detail, name="order_detail"),
+    path("order_detail/<int:id>/", views.order_detail, name="order_detail_admin"),
     # ================================= SHIPPING ================================= #
     path("shipping_admin/", views.shipping_admin, name="shipping_admin"),
     path("shipping_create/", views.shipping_create, name="shipping_create"),
@@ -75,6 +75,7 @@ urlpatterns = [
         name="delete_from_cart_admin",
     ),
     path("shopcart_admin/", views.shopcart, name="shopcart_admin"),
+    path("order_create_admin/", views.order_create_admin, name="order_create_admin"),
     # =============================== CATEGORY BLOG ============================== #
     path("category_blog_admin/", views.category_blog_admin, name="category_blog_admin"),
     path(
@@ -133,20 +134,44 @@ urlpatterns = [
         views.contact_message_delete,
         name="contact_message_delete",
     ),
-
-     # ============================= COLLECTION BOOKS ============================= #
-
-
-    path('collection_admin/', views.collection_book_admin, name='collection_book_admin'),
-    path('collection_create/', views.collection_book_create, name='collection_create'),
-    path('collection_edit/<int:pk>/', views.collection_edit, name='collection_edit'),
-    path('collection_delete/<int:pk>/', views.collection_delete, name='collection_delete'),
-
-
+    # ============================= COLLECTION BOOKS ============================= #
+    path(
+        "collection_admin/", views.collection_book_admin, name="collection_book_admin"
+    ),
+    path("collection_create/", views.collection_book_create, name="collection_create"),
+    path("collection_edit/<int:pk>/", views.collection_edit, name="collection_edit"),
+    path(
+        "collection_delete/<int:pk>/", views.collection_delete, name="collection_delete"
+    ),
     # ==================================== FAQ =================================== #
+    path("faq_admin/", views.faq_admin, name="faq_admin"),
+    path("faq_create/", views.faq_create, name="faq_create"),
+    path("faq_edit/<int:pk>/", views.faq_edit, name="faq_edit"),
+    path("faq_delete/<int:pk>/", views.faq_delete, name="faq_delete"),
+    
+    # =================================== ABOUT ================================== #
+    path("about_admin/", views.about_admin, name="about_admin"),
+    path("about_create/", views.about_create, name="about_create"),
+    path("about_edit/<int:pk>/", views.about_edit, name="about_edit"),
+    path("about_delete/<int:pk>/", views.about_delete, name="about_delete"),
 
-    path('faq_admin/', views.faq_admin, name='faq_admin'),
-    path('faq_create/', views.faq_create, name='faq_create'),
-    path('faq_edit/<int:pk>/', views.faq_edit, name='faq_edit'),
-    path('faq_delete/<int:pk>/', views.faq_delete, name='faq_delete'),
+    # ============================== SHIPPTING INFO ============================== #
+    path("shipping_info_admin/", views.shipping_info_admin, name="shipping_info_admin"),
+    path("shipping_info_create/", views.shipping_info_create, name="shipping_info_create"),
+    path("shipping_info_edit/<int:pk>/", views.shipping_info_edit, name="shipping_info_edit"),
+    path("shipping_info_delete/<int:pk>/", views.shipping_info_delete, name="shipping_info_delete"),
+
+    # =============================== PAYMENT INFO =============================== #
+    path("payment_info_admin/", views.payment_info_admin, name="payment_info_admin"),
+    path("payment_info_create/", views.payment_info_create, name="payment_info_create"),
+    path("payment_info_edit/<int:pk>/", views.payment_info_edit, name="payment_info_edit"),
+    path("payment_info_delete/<int:pk>/", views.payment_info_delete, name="payment_info_delete"),
+
+    # =============================== DISCOUNT INFO ============================== #
+
+    path("discount_info_admin/", views.discount_info_admin, name="discount_info_admin"),
+    path("discount_info_create/", views.discount_info_create, name="discount_info_create"),
+    path("discount_info_edit/<int:pk>/", views.discount_info_edit, name="discount_info_edit"),
+    path("discount_info_delete/<int:pk>/", views.discount_info_delete, name="discount_info_delete"),
+
 ]
