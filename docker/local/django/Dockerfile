@@ -1,27 +1,26 @@
 FROM python:3.9.6-alpine
 
-# set work directory
-WORKDIR /usr/src/app
-# copy project
-COPY . .
+ENV APP_HOME=/app
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
 
-
-# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# install psycopg2 dependencies
+RUN apk update \
+    && apk add postgresql-dev gcc python3-dev musl-dev
+
 # install dependencies
-RUN python3 -m pip install --no-cache-dir --no-warn-script-location --upgrade pip \
-    && python3 -m pip install --no-cache-dir --no-warn-script-location --user -r requirements/development.txt
+RUN pip install --upgrade pip
 
-# copy entrypoint.sh
-COPY ./scripts/entrypoint.sh /usr/src/app/
-RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
-RUN chmod +x /usr/src/app/entrypoint.sh
+RUN apk add gettext
 
-# run entrypoint.sh
-#ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
-# entrypoint.sh will be discussed later.
-CMD [ "/usr/src/app/entrypoint.sh" ]
+COPY ./requirements/base.txt .
 
+RUN pip install -r base.txt
+
+COPY . .
+
+EXPOSE 8000
